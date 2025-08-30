@@ -1,11 +1,10 @@
-
 {% comment %}
   sections/ecomx-banner.liquid
   New, from-scratch banner with editable texts and button animation.
 {% endcomment %}
 
 {{ 'ecomx-sections.css' | asset_url | stylesheet_tag }}
-{{ 'ecomx-banner.js'   | asset_url | script_tag: defer: true }}
+<script src="{{ 'ecomx-banner.js' | asset_url }}" defer></script>
 
 <section class="ecomx-container">
   <div class="ecomx-banner">
