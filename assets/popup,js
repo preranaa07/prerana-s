@@ -1,0 +1,52 @@
+document.addEventListener("DOMContentLoaded", function() {
+  const popup = document.getElementById("product-popup");
+  const popupData = document.getElementById("popup-data");
+  const closeBtn = document.querySelector(".close-popup");
+
+  document.querySelectorAll(".open-popup").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const handle = btn.dataset.handle;
+      const res = await fetch(`/products/${handle}.js`);
+      const product = await res.json();
+
+      let variantsHtml = product.variants.map(v => `<option value="${v.id}">${v.title} - ${Shopify.formatMoney(v.price)}</option>`).join("");
+
+      popupData.innerHTML = `
+        <h2>${product.title}</h2>
+        <p>${product.description}</p>
+        <label>Variant:</label>
+        <select id="variant-select">${variantsHtml}</select>
+        <button id="add-to-cart">Add to Cart</button>
+      `;
+      popup.classList.remove("hidden");
+
+      document.getElementById("add-to-cart").addEventListener("click", async () => {
+        const variantId = document.getElementById("variant-select").value;
+
+        await fetch("/cart/add.js", {
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body: JSON.stringify({id: variantId, quantity:1})
+        });
+
+        // Special auto-add rule
+        const selectedVariant = product.variants.find(v=>v.id==variantId);
+        if(selectedVariant.title.includes("Black") && selectedVariant.title.includes("Medium")){
+          const jacketRes = await fetch(`/products/soft-winter-jacket.js`);
+          const jacket = await jacketRes.json();
+          await fetch("/cart/add.js", {
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body: JSON.stringify({id: jacket.variants[0].id, quantity:1})
+          });
+        }
+
+        alert("Added to cart!");
+        popup.classList.add("hidden");
+      });
+    });
+  });
+
+  closeBtn.addEventListener("click", ()=>popup.classList.add("hidden"));
+  popup.addEventListener("click", e => { if(e.target===popup) popup.classList.add("hidden"); });
+});

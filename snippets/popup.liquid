@@ -1,0 +1,13 @@
+<div>
+  <h2>{{ product.title }}</h2>
+  <img src="{{ product.featured_image | img_url: '400x' }}" alt="{{ product.title }}" style="max-width:100%;margin:10px 0;">
+  <p>{{ product.description | strip_html | truncate: 150 }}</p>
+  <p><strong>{{ product.price | money }}</strong></p>
+
+  <form method="post" action="/cart/add">
+    <input type="hidden" name="id" value="{{ product.variants.first.id }}">
+    <button type="submit" style="padding:10px 15px;background:black;color:white;border:none;border-radius:4px;cursor:pointer;">
+      Add to Cart
+    </button>
+  </form>
+</div>

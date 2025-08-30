@@ -1,0 +1,87 @@
+<section class="test-banner">
+  <div class="banner-content">
+    <h1>{{ section.settings.headline }}</h1>
+    <p>{{ section.settings.subheadline }}</p>
+    <a href="{{ section.settings.button_link }}" class="btn-animated">{{ section.settings.button_text }}</a>
+  </div>
+</section>
+
+<style>
+.test-banner {
+    background: #f5f5f5;
+    text-align: center;
+    padding: 80px 20px;
+}
+
+.test-banner h1 {
+    font-size: 48px;
+    color: #d62828;
+    margin-bottom: 20px;
+}
+
+.test-banner p {
+    font-size: 20px;
+    margin-bottom: 40px;
+    color: #333;
+}
+
+.btn-animated {
+    display: inline-block;
+    padding: 15px 30px;
+    background-color: #d62828;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.btn-animated:hover {
+    background-color: #ff4c4c;
+    transform: translateY(-5px);
+}
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 768px) {
+    .test-banner h1 {
+        font-size: 32px;
+    }
+    .test-banner p {
+        font-size:16px;
+    }
+    .btn-animated {
+        padding: 12px 24px;
+    }
+}
+</style>
+
+{% schema %}
+{
+    "name": "Test Banner",
+    "settings": [
+        {
+            "type": "text",
+            "id": "headline",
+            "label": "Headline",
+            "default": "Welcome To Our Store"
+        },
+        {
+            "type": "text",
+            "id": "subheadline",
+            "label": "SubHeadline",
+            "default": "Shop The latest products!"
+        },
+        {
+            "type": "url",
+            "id": "button_link",
+            "label": "Button Link",
+            "default": "/collections/all"
+        },
+        {
+            "type": "text",
+            "id": "button_text",
+            "label": "Button Text",
+            "default": "Shop now"
+        }
+    ]
+}
+{% endschema %}
