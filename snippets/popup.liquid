@@ -1,13 +1,42 @@
-<div>
-  <h2>{{ product.title }}</h2>
-  <img src="{{ product.featured_image | img_url: '400x' }}" alt="{{ product.title }}" style="max-width:100%;margin:10px 0;">
-  <p>{{ product.description | strip_html | truncate: 150 }}</p>
-  <p><strong>{{ product.price | money }}</strong></p>
-
-  <form method="post" action="/cart/add">
-    <input type="hidden" name="id" value="{{ product.variants.first.id }}">
-    <button type="submit" style="padding:10px 15px;background:black;color:white;border:none;border-radius:4px;cursor:pointer;">
-      Add to Cart
-    </button>
-  </form>
+<div id="popup" class="popup">
+  <div class="popup-content">
+    <span id="closePopup">&times;</span>
+    <h2>Special Offer!</h2>
+    <p>Subscribe now and get 10% off.</p>
+  </div>
 </div>
+
+<style>
+.popup {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+}
+.popup-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  width: 300px;
+}
+.popup-content span {
+  float: right;
+  cursor: pointer;
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+  let popup = document.getElementById("popup");
+  let closeBtn = document.getElementById("closePopup");
+
+  setTimeout(() => {
+    popup.style.display = "flex";
+  }, 2000); // show after 2 seconds
+
+  closeBtn.onclick = () => popup.style.display = "none";
+});
+</script>
