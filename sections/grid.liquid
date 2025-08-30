@@ -1,48 +1,102 @@
-{% schema %}
-{
-  "name": "Custom Grid",
-  "settings": [
-    { "type": "text", "id": "title", "label": "Grid Title", "default": "Our Features" }
-  ],
-  "blocks": [
-    {
-      "type": "item",
-      "name": "Grid Item",
-      "settings": [
-        { "type": "text", "id": "heading", "label": "Heading" },
-        { "type": "textarea", "id": "description", "label": "Description" }
-      ]
-    }
-  ],
-  "max_blocks": 6
-}
-{% endschema %}
+{% comment %}
+  Product Grid (6 items) + Modal shell
+  - Select 6 products in the customizer (blocks)
+  - Clicking "+" opens modal with product data loaded via /products/{handle}.js (vanilla JS)
+  - Add-to-cart + special rule (Black & Medium => auto add Soft Winter Jacket)
+{% endcomment %}
 
-<section class="grid">
-  <h2>{{ section.settings.title }}</h2>
-  <div class="grid-container">
-    {% for block in section.blocks %}
-      <div class="grid-item">
-        <h3>{{ block.settings.heading }}</h3>
-        <p>{{ block.settings.description }}</p>
-      </div>
-    {% endfor %}
+<section class="ee-grid" id="ee-grid-{{ section.id }}">
+  <div class="page-width">
+    <div class="ee-grid__wrap">
+      {% for block in section.blocks %}
+        {% assign product = all_products[block.settings.product] %}
+        {% if product %}
+          <article class="ee-card" {{ block.shopify_attributes }}>
+            <div class="ee-card__media">
+              <img loading="lazy"
+                   src="{{ product.featured_image | image_url: width: 800 }}"
+                   alt="{{ product.title | escape }}">
+              <button class="ee-card__plus ee-open-modal"
+                      type="button"
+                      aria-label="View {{ product.title }}"
+                      data-handle="{{ product.handle }}">
+                <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="11" fill="white" stroke="#111"/>
+                  <path d="M12 7v10M7 12h10" stroke="#111" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </button>
+            </div>
+          </article>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="ee-modal" id="ee-modal" role="dialog" aria-modal="true" aria-hidden="true"
+       data-bonus-enabled="{{ section.settings.enable_bonus | json }}"
+       data-bonus-handle="{{ section.settings.bonus_product_handle | escape }}">
+    <div class="ee-modal__overlay"></div>
+    <div class="ee-modal__card">
+      <button class="ee-modal__close" aria-label="Close modal">×</button>
+      <div class="ee-modal__content"><!-- JS injects product markup here --></div>
+    </div>
   </div>
 </section>
 
 <style>
-.grid {
-  text-align: center;
-  padding: 40px 20px;
-}
-.grid-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-}
-.grid-item {
-  background: #f5f5f5;
-  padding: 20px;
-  border-radius: 10px;
-}
+.ee-grid{padding: clamp(24px, 6vw, 48px) 0;}
+.ee-grid__wrap{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px;}
+@media (max-width: 900px){ .ee-grid__wrap{grid-template-columns:repeat(2,minmax(0,1fr));} }
+@media (max-width: 560px){ .ee-grid__wrap{grid-template-columns:1fr;} }
+
+.ee-card{position:relative; border-radius:10px; overflow:hidden; background:#f7f7f7;}
+.ee-card__media{position:relative; aspect-ratio: 4 / 3; display:block;}
+.ee-card__media img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;}
+.ee-card__plus{position:absolute; right:12px; top:12px; display:inline-grid; place-items:center; border:none; background:transparent; cursor:pointer; transition:transform .15s ease;}
+.ee-card__plus:hover{transform:scale(1.08);}
+
+.ee-modal{position:fixed; inset:0; display:none; z-index:9999;}
+.ee-modal[aria-hidden="false"]{display:block;}
+.ee-modal__overlay{position:absolute; inset:0; background:rgba(0,0,0,.45); backdrop-filter:saturate(120%) blur(2px);}
+.ee-modal__card{position:relative; z-index:1; width:min(720px, 92%); margin:6vh auto; background:#fff; border-radius:12px; box-shadow:0 20px 60px rgba(0,0,0,.25); overflow:hidden;}
+.ee-modal__close{position:absolute; right:12px; top:8px; border:none; background:transparent; font-size:28px; line-height:1; cursor:pointer;}
+.ee-modal__content{display:grid; grid-template-columns:160px 1fr; gap:16px; padding:18px;}
+@media(max-width:700px){ .ee-modal__content{grid-template-columns:1fr;} .ee-modal__card{margin:3vh auto;} }
+
+.ee-pimg{width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:6px;}
+.ee-title{font-size:18px; margin:2px 0 4px;}
+.ee-price{font-weight:600; margin:0 0 8px;}
+.ee-desc{font-size:12px; color:#333; line-height:1.4; max-height:4.8em; overflow:hidden;}
+.ee-field{margin:12px 0;}
+.ee-label{font-size:12px; color:#111; margin-bottom:6px;}
+.ee-pills{display:flex; gap:6px;}
+.ee-pill{flex:1 1 auto; border:1px solid #111; background:#fff; border-radius:4px; padding:8px 10px; cursor:pointer; text-align:center; transition:background .15s ease, color .15s ease;}
+.ee-pill[aria-pressed="true"]{background:#111; color:#fff;}
+.ee-select{width:100%; padding:10px 12px; border:1px solid #111; border-radius:4px; background:#fff; appearance:none; background-image:linear-gradient(45deg, transparent 50%, #111 50%), linear-gradient(135deg, #111 50%, transparent 50%), linear-gradient(to right, transparent, transparent);
+background-position:calc(100% - 18px) calc(1em + 2px), calc(100% - 13px) calc(1em + 2px), 100% 0;
+background-size:5px 5px, 5px 5px, 2.5em 2.5em; background-repeat:no-repeat;}
+.ee-actions{display:flex; gap:10px; align-items:center; margin-top:14px;}
+.ee-add{flex:0 0 auto; padding:10px 16px; background:#111; color:#fff; border:1px solid #111; border-radius:6px; cursor:pointer;}
+.ee-add:hover{background:#222;}
+.ee-note{font-size:12px; color:#666;}
 </style>
+
+{% schema %}
+{
+  "name": "EE — Product Grid (Custom)",
+  "settings": [
+    { "type": "checkbox", "id": "enable_bonus", "label": "Enable bonus rule (Black + Medium => auto add)", "default": true },
+    { "type": "text", "id": "bonus_product_handle", "label": "Bonus product handle (Soft Winter Jacket)", "default": "soft-winter-jacket" }
+  ],
+  "blocks": [
+    { "type": "product", "name": "Product", "limit": 6,
+      "settings": [
+        { "type": "product", "id": "product", "label": "Select product" }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [{ "name":"EE — Product Grid (Custom)" }]
+}
+{% endschema %}
