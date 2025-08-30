@@ -1,16 +1,12 @@
 {
+  "name": "Ecomexperts Test Page",
   "sections": {
     "banner": {
-      "type": "ecomx-banner",
-      "settings": {}
+      "type": "ecomx-banner"
     },
     "grid": {
-      "type": "ecomx-product-grid",
-      "settings": {}
+      "type": "ecomx-grid"
     }
   },
-  "order": [
-    "banner",
-    "grid"
-  ]
+  "order": ["banner", "grid"]
 }
