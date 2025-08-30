@@ -433,7 +433,10 @@ document.addEventListener("DOMContentLoaded", () => {
   closeBtn.addEventListener("click", () => popup.classList.add("hidden"));
 });
 </script>
-{{ 'popup.js' | asset_url | script_tag }}
-{{ 'custom-product-modal.js' | asset_url | script_tag }}
+  {{ 'ecomx-banner.css' | asset_url | stylesheet_tag }}
+  {{ 'ecomx-grid.css' | asset_url | stylesheet_tag }}
+
+  {{ 'ecomx-banner.js' | asset_url | script_tag }}
+  {{ 'ecomx-grid.js' | asset_url | script_tag }}
   </body>
 </html>

@@ -1,0 +1,16 @@
+{
+  "sections": {
+    "banner": {
+      "type": "ecomx-banner",
+      "settings": {}
+    },
+    "grid": {
+      "type": "ecomx-product-grid",
+      "settings": {}
+    }
+  },
+  "order": [
+    "banner",
+    "grid"
+  ]
+}
