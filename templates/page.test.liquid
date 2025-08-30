@@ -1,5 +1,18 @@
-{% comment %} Debugging marker - remove after confirming {% endcomment %}
-<h1 style="color:red; text-align:center;">THIS IS PAGE.TEST.LIQUID</h1>
+{% comment %}
+  Template: page.test.liquid
+  Purpose: Custom Test Page combining Banner and Grid sections
+{% endcomment %}
+
+{% layout 'theme' %}
+
+<div class="page-width">
+  <!-- Banner Section -->
+  {% section 'banner' %}
+
+  <!-- Grid Section -->
+  {% section 'grid' %}
+</div>
+
 
 {% layout 'theme' %}
 {% section 'banner' %}
