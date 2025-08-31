@@ -1,58 +1,74 @@
-{% comment %}
-  sections/ecomx-banner.liquid
-  New, from-scratch banner with editable texts and button animation.
-{% endcomment %}
-
-{{ 'ecomx-sections.css' | asset_url | stylesheet_tag }}
-<script src="{{ 'ecomx-banner.js' | asset_url }}" defer></script>
-
-<section class="ecomx-container">
-  <div class="ecomx-banner">
-    <div class="ecomx-banner__media">
-      {% if section.settings.bg_image != blank %}
-        <img src="{{ section.settings.bg_image | image_url: width: 1600 }}" alt="{{ section.settings.bg_image.alt | escape }}">
-      {% else %}
-        <div style="background:#0f172a; width:100%; height:100%;"></div>
-      {% endif %}
-    </div>
-    <div class="ecomx-banner__overlay" aria-hidden="true"></div>
-
-    <div class="ecomx-banner__content">
-      {% if section.settings.eyebrow != blank %}
-        <div class="ecomx-eyebrow">{{ section.settings.eyebrow }}</div>
-      {% endif %}
-      {% if section.settings.heading != blank %}
-        <h1 class="ecomx-headline">{{ section.settings.heading }}</h1>
-      {% endif %}
-      {% if section.settings.subheading != blank %}
-        <p class="ecomx-subhead">{{ section.settings.subheading }}</p>
-      {% endif %}
-
-      <div class="ecomx-cta-row">
-        {% if section.settings.cta_label != blank %}
-          <a class="ecomx-btn" data-animate="bounce" href="{{ section.settings.cta_link }}">{{ section.settings.cta_label }}</a>
-        {% endif %}
-        {% if section.settings.cta2_label != blank %}
-          <a class="ecomx-btn ecomx-btn--ghost" data-animate="bounce" href="{{ section.settings.cta2_link }}">{{ section.settings.cta2_label }}</a>
-        {% endif %}
-      </div>
-    </div>
-  </div>
-</section>
-
 {% schema %}
 {
-  "name": "EcomX • Banner (Custom)",
+  "name": "Custom Banner",
   "settings": [
-    { "type": "image_picker", "id": "bg_image", "label": "Background image" },
-    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "New Arrival" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Your Big Headline" },
-    { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "Sub copy explaining the offer. Fully editable from Customizer." },
-    { "type": "text", "id": "cta_label", "label": "Primary CTA label", "default": "Shop now" },
-    { "type": "url",  "id": "cta_link",  "label": "Primary CTA link" },
-    { "type": "text", "id": "cta2_label", "label": "Secondary CTA label", "default": "Learn more" },
-    { "type": "url",  "id": "cta2_link",  "label": "Secondary CTA link" }
+    {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "Background Image"
+    },
+    {
+      "type": "text",
+      "id": "tagline",
+      "label": "Tagline",
+      "default": "NEW ARRIVAL"
+    },
+    {
+      "type": "text",
+      "id": "headline",
+      "label": "Headline",
+      "default": "Your Big Headline"
+    },
+    {
+      "type": "text",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Sub copy explaining the offer. Fully editable from Customizer."
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Shop Now"
+    }
   ],
-  "presets": [{ "name": "Banner (EcomX)" }]
+  "presets": [
+    {
+      "name": "Custom Banner"
+    }
+  ]
 }
 {% endschema %}
+
+<section class="custom-banner relative flex items-center justify-center min-h-[80vh] text-center">
+  <div class="absolute inset-0">
+    {% if section.settings.bg_image != blank %}
+      <img src="{{ section.settings.bg_image | img_url: '1600x' }}" alt="Banner Background" class="w-full h-full object-cover">
+    {% else %}
+      <div class="w-full h-full bg-gray-100"></div>
+    {% endif %}
+  </div>
+
+  <div class="relative z-10 max-w-2xl px-6 py-12 bg-white/70 rounded-2xl shadow-lg backdrop-blur">
+    {% if section.settings.tagline != blank %}
+      <p class="uppercase tracking-widest text-sm text-gray-600 mb-3">{{ section.settings.tagline }}</p>
+    {% endif %}
+
+    <h1 class="text-5xl font-extrabold text-gray-900 mb-4">{{ section.settings.headline }}</h1>
+
+    {% if section.settings.subtext != blank %}
+      <p class="text-lg text-gray-700 mb-6">{{ section.settings.subtext }}</p>
+    {% endif %}
+
+    {% if section.settings.button_text != blank %}
+      <a href="{{ section.settings.button_link }}" class="inline-block bg-black text-white font-semibold py-3 px-8 rounded-full shadow-lg hover:scale-105 transition-transform">
+        {{ section.settings.button_text }}
+      </a>
+    {% endif %}
+  </div>
+</section>
