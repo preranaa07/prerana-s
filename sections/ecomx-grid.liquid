@@ -10,7 +10,7 @@
   }
   .grid-gallery {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Force 3 columns */
+    grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
   }
   .grid-item {
@@ -62,6 +62,37 @@
   .grid-item .hotspot:hover {
     transform: scale(1.1);
   }
+
+  /* Modal Styles */
+  .product-modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background: rgba(0,0,0,0.6);
+  }
+  .product-modal-content {
+    background: #fff;
+    margin: 10% auto;
+    padding: 2rem;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    text-align: left;
+  }
+  .product-modal .close-modal {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+  }
 </style>
 
 <section class="custom-grid">
@@ -74,23 +105,60 @@
         {% assign first_available_variant = product.variants | where: "available", true | first %}
 
         <div class="grid-item">
-          <a href="{{ product.url }}">
-            <img src="{{ product.featured_image | img_url: '500x' }}" alt="{{ product.title }}">
-            <h3>{{ product.title }}</h3>
-            <p>
-              {% if first_available_variant %}
-                {{ first_available_variant.price | money }}
-              {% else %}
-                <span style="color:red;">Sold Out</span>
-              {% endif %}
-            </p>
-          </a>
-          <div class="hotspot">+</div>
+          <img src="{{ product.featured_image | img_url: '500x' }}" alt="{{ product.title }}">
+          <h3>{{ product.title }}</h3>
+          <p>
+            {% if first_available_variant %}
+              {{ first_available_variant.price | money }}
+            {% else %}
+              <span style="color:red;">Sold Out</span>
+            {% endif %}
+          </p>
+          <div class="hotspot" data-product-id="{{ product.id }}">+</div>
         </div>
       {% endif %}
     {% endfor %}
   </div>
 </section>
+
+<!-- Modal HTML -->
+<div id="product-modal" class="product-modal">
+  <div class="product-modal-content">
+    <span class="close-modal">&times;</span>
+    <div id="modal-content-inner"></div>
+  </div>
+</div>
+
+<script>
+  // Open modal with product info
+  document.querySelectorAll('.grid-item .hotspot').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const productId = this.dataset.productId;
+      fetch(`/products/${productId}.js`)
+        .then(response => response.json())
+        .then(product => {
+          document.getElementById('modal-content-inner').innerHTML = `
+            <h2>${product.title}</h2>
+            <img src="${product.images[0]}" style="width:100%; border-radius:8px; margin-bottom:1rem;" />
+            <p>${product.description}</p>
+            <p style="font-weight:bold; margin-top:1rem;">Price: ${product.variants[0].price}</p>
+            <a href="/products/${product.handle}" style="display:inline-block; margin-top:1rem; background:#000; color:#fff; padding:0.5rem 1rem; border-radius:5px;">View Product</a>
+          `;
+          document.getElementById('product-modal').style.display = 'block';
+        });
+    });
+  });
+
+  // Close modal
+  document.querySelector('.close-modal').addEventListener('click', () => {
+    document.getElementById('product-modal').style.display = 'none';
+  });
+  window.addEventListener('click', (e) => {
+    if (e.target == document.getElementById('product-modal')) {
+      document.getElementById('product-modal').style.display = 'none';
+    }
+  });
+</script>
 
 {% schema %}
 {
