@@ -40,7 +40,7 @@
               <span style="color:red;">Sold Out</span>
             {% endif %}
           </p>
-          <div class="hotspot" data-handle="{{ product.handle }}">+</div>
+          <div class="hotspot" data-product='{{ product | json }}'>+</div>
         </div>
       {% endif %}
     {% endfor %}
@@ -64,63 +64,67 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.grid-item .hotspot').forEach(btn => {
     btn.addEventListener('click', function(e) {
       e.preventDefault();
-      const productHandle = this.dataset.handle;
+      const product = JSON.parse(this.dataset.product);
 
-      fetch(`/products/${productHandle}.js`)
+      // Build options dropdowns
+      let optionsHtml = '';
+      if (product.options.length > 0) {
+        product.options.forEach((optName, index) => {
+          let valuesHtml = [...new Set(product.variants.map(v => v.options[index]))]
+            .map(val => `<option value="${val}">${val}</option>`).join('');
+          optionsHtml += `
+            <div class="product-options">
+              <label>${optName}</label>
+              <select data-option-index="${index}">${valuesHtml}</select>
+            </div>`;
+        });
+      }
+
+      const firstVariantPrice = (product.variants[0].price / 100).toFixed(2);
+
+      modalInner.innerHTML = `
+        <h2>${product.title}</h2>
+        <img src="${product.images[0]}" style="width:100%; border-radius:8px; margin-bottom:1rem;" />
+        <p>${product.description}</p>
+        <p style="font-weight:bold; margin-top:1rem;">Price: $${firstVariantPrice}</p>
+        ${optionsHtml}
+        <div class="add-to-cart-btn">Add to Cart</div>
+      `;
+
+      const addBtn = modalInner.querySelector('.add-to-cart-btn');
+      addBtn.addEventListener('click', () => {
+        const selects = modalInner.querySelectorAll('select');
+        let selectedOptions = [];
+        selects.forEach(s => selectedOptions.push(s.value));
+
+        let variant = product.variants.find(v => 
+          v.options.every((optVal, i) => optVal === selectedOptions[i])
+        );
+
+        if (!variant) { alert('Selected variant not available'); return; }
+
+        // Add selected variant to cart
+        fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: variant.id, quantity: 1 })
+        })
         .then(res => res.json())
-        .then(product => {
-          // Build options dropdowns
-          let optionsHtml = '';
-          if (product.options.length > 0) {
-            product.options.forEach((optName, index) => {
-              let valuesHtml = [...new Set(product.variants.map(v => v.options[index]))]
-                .map(val => `<option value="${val}">${val}</option>`).join('');
-              optionsHtml += `
-                <div class="product-options">
-                  <label>${optName}</label>
-                  <select data-option-index="${index}">${valuesHtml}</select>
-                </div>`;
-            });
-          }
-
-          // Format price in dollars
-          const firstVariantPrice = (product.variants[0].price / 100).toFixed(2);
-
-          modalInner.innerHTML = `
-            <h2>${product.title}</h2>
-            <img src="${product.images[0]}" style="width:100%; border-radius:8px; margin-bottom:1rem;" />
-            <p>${product.description}</p>
-            <p style="font-weight:bold; margin-top:1rem;">Price: $${firstVariantPrice}</p>
-            ${optionsHtml}
-            <div class="add-to-cart-btn">Add to Cart</div>
-          `;
-
-          const addBtn = modalInner.querySelector('.add-to-cart-btn');
-          addBtn.addEventListener('click', () => {
-            const selects = modalInner.querySelectorAll('select');
-            let selectedOptions = [];
-            selects.forEach(s => selectedOptions.push(s.value));
-
-            let variant = product.variants.find(v => 
-              v.options.every((optVal, i) => optVal === selectedOptions[i])
-            );
-
-            if (!variant) { alert('Selected variant not available'); return; }
-
+        .then(data => {
+          // Auto-add Soft Winter Jacket if Black + Medium
+          if (product.title === 'YOUR_PRODUCT_NAME' && selectedOptions.includes('Black') && selectedOptions.includes('Medium')) {
             fetch('/cart/add.js', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ id: variant.id, quantity: 1 })
-            })
-            .then(res => res.json())
-            .then(data => {
-              alert('Added to cart!');
-              modal.style.display = 'none';
+              body: JSON.stringify({ id: 'SOFT_JACKET_VARIANT_ID', quantity: 1 })
             });
-          });
-
-          modal.style.display = 'block';
+          }
+          alert('Added to cart!');
+          modal.style.display = 'none';
         });
+      });
+
+      modal.style.display = 'block';
     });
   });
 
