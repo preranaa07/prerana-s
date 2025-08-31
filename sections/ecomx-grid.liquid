@@ -1,39 +1,59 @@
 <style>
   .custom-grid {
     padding: 4rem 2rem;
+    text-align: center;
   }
   .custom-grid h2 {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     font-weight: 700;
     margin-bottom: 2rem;
   }
   .grid-gallery {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
   }
   .grid-item {
     position: relative;
     overflow: hidden;
+    border-radius: 10px;
+    background: #fafafa;
+    padding: 1rem;
+    transition: box-shadow 0.2s ease-in-out;
+  }
+  .grid-item:hover {
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
   }
   .grid-item img {
     width: 100%;
     height: auto;
     display: block;
+    margin-bottom: 0.75rem;
+    border-radius: 8px;
+  }
+  .grid-item h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0.5rem 0;
+  }
+  .grid-item p {
+    font-size: 0.9rem;
+    color: #333;
+    margin: 0;
   }
   .grid-item .hotspot {
     position: absolute;
-    top: 15px;
-    right: 15px;
-    width: 35px;
-    height: 35px;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     background: white;
     color: black;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-weight: bold;
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(0,0,0,0.15);
@@ -49,35 +69,42 @@
 
   <div class="grid-gallery">
     {% for block in section.blocks %}
-      <div class="grid-item">
-        <img src="{{ block.settings.image | img_url: '800x' }}" alt="">
-        <div class="hotspot">+</div>
-      </div>
+      {% if block.settings.product != blank %}
+        {% assign product = all_products[block.settings.product] %}
+        <div class="grid-item">
+          <a href="{{ product.url }}">
+            <img src="{{ product.featured_image | img_url: '500x' }}" alt="{{ product.title }}">
+            <h3>{{ product.title }}</h3>
+            <p>{{ product.price | money }}</p>
+          </a>
+          <div class="hotspot">+</div>
+        </div>
+      {% endif %}
     {% endfor %}
   </div>
 </section>
 
 {% schema %}
 {
-  "name": "Custom Grid",
+  "name": "Custom Product Grid",
   "settings": [
     {
       "type": "text",
       "id": "grid_title",
       "label": "Grid Title",
-      "default": "Tisso vison in the wild"
+      "default": "Tisso vision in the wild"
     }
   ],
   "blocks": [
     {
-      "type": "image",
-      "name": "Image",
+      "type": "product",
+      "name": "Product",
       "settings": [
-        { "type": "image_picker", "id": "image", "label": "Image" }
+        { "type": "product", "id": "product", "label": "Select Product" }
       ]
     }
   ],
-  "max_blocks": 12,
-  "presets": [{ "name": "Custom Grid" }]
+  "max_blocks": 6,
+  "presets": [{ "name": "Custom Product Grid" }]
 }
 {% endschema %}
