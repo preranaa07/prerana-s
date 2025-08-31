@@ -114,7 +114,7 @@
               <span style="color:red;">Sold Out</span>
             {% endif %}
           </p>
-          <div class="hotspot" data-product-id="{{ product.id }}">+</div>
+          <div class="hotspot" data-handle="{{ product.handle }}">+</div>
         </div>
       {% endif %}
     {% endfor %}
@@ -130,33 +130,35 @@
 </div>
 
 <script>
-  // Open modal with product info
-  document.querySelectorAll('.grid-item .hotspot').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const productId = this.dataset.productId;
-      fetch(`/products/${productId}.js`)
-        .then(response => response.json())
-        .then(product => {
-          document.getElementById('modal-content-inner').innerHTML = `
-            <h2>${product.title}</h2>
-            <img src="${product.images[0]}" style="width:100%; border-radius:8px; margin-bottom:1rem;" />
-            <p>${product.description}</p>
-            <p style="font-weight:bold; margin-top:1rem;">Price: ${product.variants[0].price}</p>
-            <a href="/products/${product.handle}" style="display:inline-block; margin-top:1rem; background:#000; color:#fff; padding:0.5rem 1rem; border-radius:5px;">View Product</a>
-          `;
-          document.getElementById('product-modal').style.display = 'block';
-        });
-    });
-  });
+  document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('product-modal');
+    const modalInner = document.getElementById('modal-content-inner');
+    const closeBtn = document.querySelector('.close-modal');
 
-  // Close modal
-  document.querySelector('.close-modal').addEventListener('click', () => {
-    document.getElementById('product-modal').style.display = 'none';
-  });
-  window.addEventListener('click', (e) => {
-    if (e.target == document.getElementById('product-modal')) {
-      document.getElementById('product-modal').style.display = 'none';
-    }
+    document.querySelectorAll('.grid-item .hotspot').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const productHandle = this.dataset.handle;
+
+        fetch(`/products/${productHandle}.js`)
+          .then(response => response.json())
+          .then(product => {
+            modalInner.innerHTML = `
+              <h2>${product.title}</h2>
+              <img src="${product.images[0]}" style="width:100%; border-radius:8px; margin-bottom:1rem;" />
+              <p>${product.description}</p>
+              <p style="font-weight:bold; margin-top:1rem;">Price: ${product.variants[0].price}</p>
+              <a href="/products/${product.handle}" style="display:inline-block; margin-top:1rem; background:#000; color:#fff; padding:0.5rem 1rem; border-radius:5px;">View Product</a>
+            `;
+            modal.style.display = 'block';
+          });
+      });
+    });
+
+    closeBtn.addEventListener('click', () => modal.style.display = 'none');
+    window.addEventListener('click', (e) => {
+      if (e.target === modal) modal.style.display = 'none';
+    });
   });
 </script>
 
