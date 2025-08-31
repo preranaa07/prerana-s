@@ -152,3 +152,21 @@ document.addEventListener('DOMContentLoaded', function() {
   "presets": [{ "name": "Custom Product Grid" }]
 }
 {% endschema %}
+
+<!-- Toast Notification -->
+<div id="cart-toast" style="
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #000;
+  color: #fff;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease-in-out;
+  z-index: 9999;
+">
+  Item added to cart!
+</div>
