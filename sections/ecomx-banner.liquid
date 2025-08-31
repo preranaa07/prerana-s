@@ -1,136 +1,67 @@
-{% schema %}
-{
-  "name": "Custom Banner",
-  "settings": [
-    {
-      "type": "image_picker",
-      "id": "bg_image",
-      "label": "Background Image"
-    },
-    {
-      "type": "text",
-      "id": "tagline",
-      "label": "Tagline",
-      "default": "NEW ARRIVAL"
-    },
-    {
-      "type": "text",
-      "id": "headline",
-      "label": "Headline",
-      "default": "Your Big Headline"
-    },
-    {
-      "type": "text",
-      "id": "subtext",
-      "label": "Subtext",
-      "default": "Sub copy explaining the offer. Fully editable from Customizer."
-    },
-    {
-      "type": "url",
-      "id": "button_link",
-      "label": "Button Link"
-    },
-    {
-      "type": "text",
-      "id": "button_text",
-      "label": "Button Text",
-      "default": "Shop Now"
-    }
-  ],
-  "presets": [
-    {
-      "name": "Custom Banner"
-    }
-  ]
-}
-{% endschema %}
-
 <style>
   .custom-banner {
     position: relative;
     min-height: 80vh;
     display: flex;
-    justify-content: center;
     align-items: center;
-    text-align: center;
-    overflow: hidden;
+    justify-content: flex-start;
+    padding: 4rem;
+    color: #111;
   }
-  .custom-banner .banner-bg {
+  .custom-banner img {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-  }
-  .custom-banner .banner-bg img {
-    width: 100%;
-    height: 100%;
     object-fit: cover;
+    z-index: -1;
   }
-  .custom-banner .banner-content {
-    position: relative;
-    z-index: 2;
-    background: rgba(255,255,255,0.7);
-    padding: 3rem;
-    border-radius: 20px;
-    max-width: 700px;
-    margin: auto;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  .banner-content {
+    max-width: 600px;
   }
-  .custom-banner .tagline {
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-size: 0.8rem;
-    color: #777;
-    margin-bottom: 0.5rem;
-  }
-  .custom-banner h1 {
-    font-size: 3rem;
+  .banner-content h1 {
+    font-size: 3.5rem;
     font-weight: 800;
     margin-bottom: 1rem;
-    color: #111;
   }
-  .custom-banner p {
+  .banner-content p {
     font-size: 1.1rem;
-    color: #555;
-    margin-bottom: 1.5rem;
+    color: #333;
+    margin-bottom: 2rem;
+    line-height: 1.6;
   }
-  .custom-banner a {
-    display: inline-block;
+  .banner-content a {
+    display: inline-flex;
+    align-items: center;
     background: #000;
     color: #fff;
-    padding: 0.8rem 2rem;
-    border-radius: 50px;
+    padding: 1rem 2rem;
     font-weight: 600;
     text-decoration: none;
+    font-size: 1rem;
+    letter-spacing: 1px;
+  }
+  .banner-content a::after {
+    content: "→";
+    margin-left: 10px;
+    font-size: 1.2rem;
     transition: transform 0.2s ease-in-out;
   }
-  .custom-banner a:hover {
-    transform: scale(1.05);
+  .banner-content a:hover::after {
+    transform: translateX(5px);
   }
 </style>
 
 <section class="custom-banner">
-  <div class="banner-bg">
-    {% if section.settings.bg_image != blank %}
-      <img src="{{ section.settings.bg_image | img_url: '1600x' }}" alt="Banner Background">
-    {% else %}
-      <div style="width:100%;height:100%;background:#f8f8f8;"></div>
-    {% endif %}
-  </div>
+  {% if section.settings.bg_image != blank %}
+    <img src="{{ section.settings.bg_image | img_url: '1600x' }}" alt="Banner Background">
+  {% endif %}
 
   <div class="banner-content">
-    {% if section.settings.tagline != blank %}
-      <p class="tagline">{{ section.settings.tagline }}</p>
-    {% endif %}
-
     <h1>{{ section.settings.headline }}</h1>
-
-    {% if section.settings.subtext != blank %}
-      <p>{{ section.settings.subtext }}</p>
-    {% endif %}
-
-    {% if section.settings.button_text != blank %}
-      <a href="{{ section.settings.button_link }}">{{ section.settings.button_text }}</a>
-    {% endif %}
+    <p>{{ section.settings.subtext }}</p>
+    <a href="{{ section.settings.button_link }}">
+      {{ section.settings.button_text }}
+    </a>
   </div>
 </section>
