@@ -11,12 +11,12 @@
     overflow: hidden; /* ensures no weird scrollbars */
   }
 
-  /* Overlay — now controlled via schema setting */
+  /* Overlay so image is visible but text still readable */
   .custom-banner::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, {{ section.settings.overlay_opacity }}); /* dynamic overlay */
+    background: rgba(0, 0, 0, 0.35); /* darker overlay for better contrast */
     z-index: 1;
   }
 
@@ -140,15 +140,6 @@
       "type": "url",
       "id": "button_link",
       "label": "Button Link"
-    },
-    {
-      "type": "range",
-      "id": "overlay_opacity",
-      "label": "Overlay Opacity (0 = no overlay, 1 = full black)",
-      "min": 0,
-      "max": 1,
-      "step": 0.05,
-      "default": 0.35
     }
   ],
   "presets": [
