@@ -2,39 +2,49 @@
   .custom-grid { padding: 4rem 2rem; text-align: center; }
   .custom-grid h2 { font-size: 2.2rem; font-weight: 700; margin-bottom: 2rem; }
   .grid-gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
-  .grid-item { position: relative; overflow: hidden; border-radius: 12px; background: #fafafa; padding: 1rem; transition: transform 0.2s ease, box-shadow 0.2s ease; }
-  .grid-item:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
-  .grid-item img { width: 100%; height: auto; display: block; margin-bottom: 0.75rem; border-radius: 10px; }
+  .grid-item { position: relative; overflow: hidden; border-radius: 10px; background: #fafafa; padding: 1rem; transition: box-shadow 0.2s ease-in-out; }
+  .grid-item:hover { box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
+  .grid-item img { width: 100%; height: auto; display: block; margin-bottom: 0.75rem; border-radius: 8px; }
   .grid-item h3 { font-size: 1rem; font-weight: 600; margin: 0.5rem 0; }
   .grid-item p { font-size: 0.9rem; color: #333; margin: 0; }
-  .grid-item .hotspot { position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; border-radius: 50%; background: #fff; color: #000; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: bold; cursor: pointer; box-shadow: 0 6px 15px rgba(0,0,0,0.2); transition: transform 0.2s; }
-  .grid-item .hotspot:hover { transform: scale(1.15); }
+  .grid-item .hotspot { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 50%; background: white; color: black; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: transform 0.2s ease-in-out; }
+  .grid-item .hotspot:hover { transform: scale(1.1); }
 
-  /* Product Modal – Modern Centered Card */
-  .product-modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; }
-  .product-modal-content { background: #fff; padding: 2rem; border-radius: 20px; width: 90%; max-width: 500px; position: relative; text-align: left; box-shadow: 0 15px 40px rgba(0,0,0,0.25); animation: modalIn 0.3s ease; }
-  .product-modal .close-modal { position: absolute; top: 15px; right: 20px; font-size: 1.8rem; font-weight: bold; color: #333; cursor: pointer; transition: color 0.2s; }
-  .product-modal .close-modal:hover { color: #000; }
-  .add-to-cart-btn { display: block; width: 100%; text-align: center; background: #000; color: #fff; padding: 0.8rem; border-radius: 12px; font-weight: 600; cursor: pointer; margin-top: 1rem; transition: background 0.2s; }
-  .add-to-cart-btn:hover { background: #333; }
+  /* Modal Styles */
+  .product-modal { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background: rgba(0,0,0,0.6); }
+  .product-modal-content { background: #fff; margin: 5% auto; padding: 2rem; border-radius: 10px; width: 90%; max-width: 500px; position: relative; text-align: left; }
+  .product-modal .close-modal { position: absolute; top: 10px; right: 15px; font-size: 1.5rem; font-weight: bold; cursor: pointer; }
 
-  /* Cart Toast Modal – Centered Modern */
-  #cart-toast-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 2rem 2.5rem; border-radius: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.3); z-index: 10000; text-align: center; animation: toastIn 0.3s ease; }
-  #cart-toast-modal p { font-size: 1.1rem; margin-bottom: 1rem; font-weight: 500; }
-  #cart-toast-modal button { background: #000; color: #fff; border: none; padding: 0.8rem 1.5rem; border-radius: 12px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
-  #cart-toast-modal button:hover { background: #333; }
-
-  @keyframes modalIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-  @keyframes toastIn { from { transform: translate(-50%, -60%) scale(0.8); opacity: 0; } to { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
+  /* Add to cart toast modal */
+  #cart-toast-modal {
+    display: none;
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    z-index: 10000;
+    text-align: center;
+  }
+  #cart-toast-modal p { margin-bottom: 1rem; font-size: 1rem; font-weight: 500; }
+  #cart-toast-modal button {
+    background: #000; color: #fff; padding: 0.6rem 1.2rem;
+    border-radius: 6px; border: none; cursor: pointer;
+    font-weight: 600;
+  }
 </style>
 
 <section class="custom-grid">
   <h2>{{ section.settings.grid_title }}</h2>
+
   <div class="grid-gallery">
     {% for block in section.blocks %}
       {% if block.settings.product != blank %}
         {% assign product = all_products[block.settings.product] %}
         {% assign first_available_variant = product.variants | where: "available", true | first %}
+
         <div class="grid-item">
           <img src="{{ product.featured_image | img_url: '500x' }}" alt="{{ product.title }}">
           <h3>{{ product.title }}</h3>
@@ -68,6 +78,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+
   const modal = document.getElementById('product-modal');
   const modalInner = document.getElementById('modal-content-inner');
   const closeBtn = document.querySelector('.close-modal');
@@ -83,12 +94,14 @@ document.addEventListener('DOMContentLoaded', function() {
       e.preventDefault();
       const product = JSON.parse(this.dataset.product);
 
+      // Build options dropdowns
       let optionsHtml = '';
       if (product.options.length > 0) {
         product.options.forEach((optName, index) => {
           let valuesHtml = [...new Set(product.variants.map(v => v.options[index]))]
             .map(val => `<option value="${val}">${val}</option>`).join('');
-          optionsHtml += `<div class="product-options">
+          optionsHtml += `
+            <div class="product-options">
               <label>${optName}</label>
               <select data-option-index="${index}">${valuesHtml}</select>
             </div>`;
@@ -99,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       modalInner.innerHTML = `
         <h2>${product.title}</h2>
-        <img src="${product.images[0]}" style="width:100%; border-radius:10px; margin-bottom:1rem;" />
+        <img src="${product.images[0]}" style="width:100%; border-radius:8px; margin-bottom:1rem;" />
         <p>${product.description}</p>
         <p style="font-weight:bold; margin-top:1rem;" id="variant-price">Price: $${firstVariantPrice}</p>
         ${optionsHtml}
@@ -108,45 +121,57 @@ document.addEventListener('DOMContentLoaded', function() {
 
       const priceElement = modalInner.querySelector('#variant-price');
       const addBtn = modalInner.querySelector('.add-to-cart-btn');
+
       const selects = modalInner.querySelectorAll('select');
+      selects.forEach(s => {
+        s.addEventListener('change', () => {
+          const selectedOptions = Array.from(selects).map(sel => sel.value);
+          const variant = product.variants.find(v => 
+            v.options.every((optVal, i) => optVal.trim().toLowerCase() === selectedOptions[i].trim().toLowerCase())
+          );
+          if (variant) {
+            priceElement.textContent = 'Price: $' + (variant.price/100).toFixed(2);
+          }
+        });
+      });
 
-      selects.forEach(s => s.addEventListener('change', () => {
-        const selectedOptions = Array.from(selects).map(sel => sel.value);
-        const variant = product.variants.find(v =>
-          v.options.every((optVal, i) => optVal.trim().toLowerCase() === selectedOptions[i].trim().toLowerCase())
-        );
-        if (variant) priceElement.textContent = 'Price: $' + (variant.price/100).toFixed(2);
-      }));
-
+      // Add to cart click
       addBtn.addEventListener('click', () => {
         const selectedOptions = Array.from(selects).map(sel => sel.value);
-        const variant = product.variants.find(v =>
+        const variant = product.variants.find(v => 
           v.options.every((optVal, i) => optVal.trim().toLowerCase() === selectedOptions[i].trim().toLowerCase())
         );
+
         if (!variant) { alert('Selected variant not available'); return; }
 
+        // Add main product
         fetch('/cart/add.js', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id: variant.id, quantity: 1 })
-        }).then(() => {
-          const colorIndex = product.options.findIndex(o => o.toLowerCase() === 'color');
-          const sizeIndex = product.options.findIndex(o => o.toLowerCase() === 'size');
-          const color = selectedOptions[colorIndex] || '';
-          const size = selectedOptions[sizeIndex] || '';
-          if (color.trim().toLowerCase() === 'black' && size.trim().toLowerCase() === 'medium') {
-            fetch('/cart/add.js', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ id: 52989197320564, quantity: 1 })
-            });
-          }
-          modal.style.display = 'none';
-          showToast();
-        });
+        }).then(res => res.json())
+          .then(() => {
+            // Auto-add Dark Winter Jacket if Black + Medium
+            const colorIndex = product.options.findIndex(o => o.toLowerCase() === 'color');
+            const sizeIndex = product.options.findIndex(o => o.toLowerCase() === 'size');
+
+            const color = selectedOptions[colorIndex] || '';
+            const size = selectedOptions[sizeIndex] || '';
+
+            if (color.trim().toLowerCase() === 'black' && size.trim().toLowerCase() === 'medium') {
+              fetch('/cart/add.js', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: 52989197320564, quantity: 1 }) // Dark Winter Jacket variant ID
+              });
+            }
+
+            modal.style.display = 'none';
+            showToast();
+          });
       });
 
-      modal.style.display = 'flex';
+      modal.style.display = 'block';
     });
   });
 
