@@ -15,13 +15,25 @@
   .product-modal-content { background: #fff; margin: 5% auto; padding: 2rem; border-radius: 10px; width: 90%; max-width: 500px; position: relative; text-align: left; }
   .product-modal .close-modal { position: absolute; top: 10px; right: 15px; font-size: 1.5rem; font-weight: bold; cursor: pointer; }
 
-  .product-options { margin-top: 1rem; }
-  .product-options label { display: block; margin: 0.5rem 0 0.2rem; font-weight: 600; }
-  .product-options select { width: 100%; padding: 0.4rem; margin-bottom: 0.8rem; border-radius: 5px; border: 1px solid #ccc; }
-  .add-to-cart-btn { display: inline-block; margin-top: 1rem; background:#000; color:#fff; padding:0.5rem 1rem; border-radius:5px; cursor:pointer; text-align:center; width:100%; }
-
-  /* Toast */
-  #cart-toast { position: fixed; bottom: 20px; right: 20px; background: #000; color: #fff; padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); opacity: 0; transform: translateY(20px); transition: all 0.3s ease-in-out; z-index: 9999; }
+  /* Add to cart toast modal */
+  #cart-toast-modal {
+    display: none;
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    z-index: 10000;
+    text-align: center;
+  }
+  #cart-toast-modal p { margin-bottom: 1rem; font-size: 1rem; font-weight: 500; }
+  #cart-toast-modal button {
+    background: #000; color: #fff; padding: 0.6rem 1.2rem;
+    border-radius: 6px; border: none; cursor: pointer;
+    font-weight: 600;
+  }
 </style>
 
 <section class="custom-grid">
@@ -50,7 +62,7 @@
   </div>
 </section>
 
-<!-- Modal -->
+<!-- Product Modal -->
 <div id="product-modal" class="product-modal">
   <div class="product-modal-content">
     <span class="close-modal">&times;</span>
@@ -58,8 +70,11 @@
   </div>
 </div>
 
-<!-- Toast -->
-<div id="cart-toast">Item added to cart!</div>
+<!-- Centered Cart Toast Modal -->
+<div id="cart-toast-modal">
+  <p>Product added to cart!</p>
+  <button onclick="window.location.href='/cart'">View Cart</button>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -67,17 +82,11 @@ document.addEventListener('DOMContentLoaded', function() {
   const modal = document.getElementById('product-modal');
   const modalInner = document.getElementById('modal-content-inner');
   const closeBtn = document.querySelector('.close-modal');
-  const toast = document.getElementById('cart-toast');
-  const DARK_WINTER_JACKET_ID = 52989197320564;
+  const toastModal = document.getElementById('cart-toast-modal');
 
-  function showToast(message) {
-    toast.textContent = message;
-    toast.style.opacity = '1';
-    toast.style.transform = 'translateY(0)';
-    setTimeout(() => {
-      toast.style.opacity = '0';
-      toast.style.transform = 'translateY(20px)';
-    }, 2000);
+  function showToast() {
+    toastModal.style.display = 'block';
+    setTimeout(() => { toastModal.style.display = 'none'; }, 3000);
   }
 
   document.querySelectorAll('.grid-item .hotspot').forEach(btn => {
@@ -112,9 +121,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
       const priceElement = modalInner.querySelector('#variant-price');
       const addBtn = modalInner.querySelector('.add-to-cart-btn');
-      const selects = modalInner.querySelectorAll('select');
 
-      // Update price dynamically on option change
+      const selects = modalInner.querySelectorAll('select');
       selects.forEach(s => {
         s.addEventListener('change', () => {
           const selectedOptions = Array.from(selects).map(sel => sel.value);
@@ -134,29 +142,32 @@ document.addEventListener('DOMContentLoaded', function() {
           v.options.every((optVal, i) => optVal.trim().toLowerCase() === selectedOptions[i].trim().toLowerCase())
         );
 
-        if (!variant) { showToast('Selected variant not available'); return; }
+        if (!variant) { alert('Selected variant not available'); return; }
 
-        // Add selected product
+        // Add main product
         fetch('/cart/add.js', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id: variant.id, quantity: 1 })
         }).then(res => res.json())
-          .then(data => {
-            // Auto-add Dark Winter Jacket for any Black + Medium
-            const isBlackMedium = selectedOptions.some(o => o.trim().toLowerCase() === 'black') &&
-                                  selectedOptions.some(o => o.trim().toLowerCase() === 'medium');
+          .then(() => {
+            // Auto-add Dark Winter Jacket if Black + Medium
+            const colorIndex = product.options.findIndex(o => o.toLowerCase() === 'color');
+            const sizeIndex = product.options.findIndex(o => o.toLowerCase() === 'size');
 
-            if (isBlackMedium) {
+            const color = selectedOptions[colorIndex] || '';
+            const size = selectedOptions[sizeIndex] || '';
+
+            if (color.trim().toLowerCase() === 'black' && size.trim().toLowerCase() === 'medium') {
               fetch('/cart/add.js', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: DARK_WINTER_JACKET_ID, quantity: 1 })
+                body: JSON.stringify({ id: 52989197320564, quantity: 1 }) // Dark Winter Jacket variant ID
               });
             }
 
-            showToast('Product added to cart!');
             modal.style.display = 'none';
+            showToast();
           });
       });
 
