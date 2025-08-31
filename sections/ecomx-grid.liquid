@@ -1,108 +1,61 @@
+{% comment %}
+  sections/ecomx-product-grid.liquid
+  6-card product grid with modal + AJAX cart + bundle rule.
+{% endcomment %}
+
+{%- comment -%}
+  CSS include – Shopify's stylesheet_tag is valid.
+{%- endcomment -%}
 {{ 'ecomx-sections.css' | asset_url | stylesheet_tag }}
-{{ 'ecomx-grid.js' | asset_url | script_tag: defer: true }}
+
+{%- comment -%}
+  JS include – use manual <script> to support defer or async.
+  Avoid `script_tag` filter since it doesn’t accept arguments.
+{%- endcomment -%}
+<script src="{{ 'ecomx-grid.js' | asset_url }}" defer></script>
 
 {%- assign jacket_variant_id = blank -%}
 {%- if section.settings.bundled_product != blank -%}
-  {%- assign _found = false -%}
-  {%- for v in section.settings.bundled_product.variants -%}
-    {%- if v.title contains 'Black' and v.title contains 'Medium' and v.available -%}
-      {%- assign jacket_variant_id = v.id -%}
-      {%- assign _found = true -%}
-      {%- break -%}
-    {%- endif -%}
-  {%- endfor -%}
-  {%- unless _found -%}
-    {%- assign jacket_variant_id = section.settings.bundled_product.first_available_variant.id -%}
-  {%- endunless -%}
+  {%- assign product = all_products[section.settings.bundled_product] -%}
+  {%- if product and product.variants.size > 0 -%}
+    {%- assign jacket_variant_id = product.variants.first.id -%}
+  {%- endif -%}
 {%- endif -%}
 
-<section class="ecomx-container ecomx-grid" aria-labelledby="ecomx-grid-title" data-section-id="{{ section.id }}">
-  {% if section.settings.title != blank %}
-    <h2 id="ecomx-grid-title" class="ecomx-grid__title">{{ section.settings.title }}</h2>
-  {% endif %}
-
-  <div class="ecomx-grid__wrap">
-    {%- for block in section.blocks -%}
-      {%- if block.settings.product != blank -%}
-        {%- assign p = block.settings.product -%}
-        <article class="ecomx-card" {{ block.shopify_attributes }}>
-          <a href="{{ p.url }}" class="ecomx-card__media" aria-label="{{ p.title | escape }}">
-            {%- if p.featured_image -%}
-              <img src="{{ p.featured_image | image_url: width: 900 }}" alt="{{ p.title | escape }} image">
-            {%- endif -%}
-          </a>
-          <div class="ecomx-card__body">
-            <div class="ecomx-card__title">{{ p.title }}</div>
-            <div class="ecomx-card__price">
-              {%- if p.price_varies -%}
-                From {{ p.price_min | money }}
-              {%- else -%}
-                {{ p.price | money }}
-              {%- endif -%}
-            </div>
-            <button class="ecomx-btn ecomx-card__cta" data-open-product
-              data-handle="{{ p.handle }}"
-              data-title="{{ p.title | escape }}"
-              data-desc="{{ p.description | strip_html | truncate: 240 | escape }}"
-              data-image="{% if p.featured_image %}{{ p.featured_image | image_url: width: 1200 }}{% endif %}">
-              Quick view
-            </button>
-          </div>
-        </article>
-      {%- else -%}
-        <article class="ecomx-card placeholder" {{ block.shopify_attributes }}>
-          <div class="ecomx-card__media"></div>
-          <div class="ecomx-card__body">
-            <div class="ecomx-card__title">Select a product</div>
-            <div class="ecomx-card__price">&nbsp;</div>
-            <button class="ecomx-btn ecomx-card__cta" disabled>Quick view</button>
-          </div>
-        </article>
-      {%- endif -%}
+<section id="ecomx-product-grid" class="ecomx-grid">
+  <div class="grid grid--6-col">
+    {%- for product in section.settings.products limit: 6 -%}
+      <div class="grid__item">
+        {%- render 'ecomx-product-card', product: product -%}
+      </div>
     {%- endfor -%}
+  </div>
+
+  {%- comment -%}
+    Example modal placeholder (customize as needed)
+  {%- endcomment -%}
+  <div id="ecomx-modal" class="ecomx-modal hidden">
+    <div class="ecomx-modal__overlay"></div>
+    <div class="ecomx-modal__content">
+      <button type="button" class="ecomx-modal__close">&times;</button>
+      <div class="ecomx-modal__body"></div>
+    </div>
   </div>
 </section>
 
-{%- render 'ecomx-modal', jacket_variant_id: jacket_variant_id -%}
-
-<script>
-  document.documentElement.setAttribute('data-money-format', {{ shop.money_format | json }});
-</script>
-
 {% schema %}
 {
-  "name": "EcomX • Product Grid",
+  "name": "EcomX Product Grid",
   "settings": [
     {
-      "type": "text",
-      "id": "title",
-      "label": "Section title",
-      "default": "Featured Products"
+      "type": "product_list",
+      "id": "products",
+      "label": "Select products"
     },
     {
       "type": "product",
       "id": "bundled_product",
-      "label": "Bundled product (Soft Winter Jacket)"
-    }
-  ],
-  "blocks": [
-    {
-      "type": "product_card",
-      "name": "Product",
-      "settings": [
-        { "type": "product", "id": "product", "label": "Product" }
-      ]
-    }
-  ],
-  "max_blocks": 6,
-  "presets": [
-    {
-      "name": "Product Grid (EcomX)",
-      "blocks": [
-        { "type": "product_card" },
-        { "type": "product_card" },
-        { "type": "product_card" }
-      ]
+      "label": "Bundled Jacket Product"
     }
   ]
 }
