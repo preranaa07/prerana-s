@@ -1,98 +1,19 @@
 <style>
-  .custom-grid {
-    padding: 4rem 2rem;
-    text-align: center;
-  }
-  .custom-grid h2 {
-    font-size: 2.2rem;
-    font-weight: 700;
-    margin-bottom: 2rem;
-  }
-  .grid-gallery {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-  }
-  .grid-item {
-    position: relative;
-    overflow: hidden;
-    border-radius: 10px;
-    background: #fafafa;
-    padding: 1rem;
-    transition: box-shadow 0.2s ease-in-out;
-  }
-  .grid-item:hover {
-    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-  }
-  .grid-item img {
-    width: 100%;
-    height: auto;
-    display: block;
-    margin-bottom: 0.75rem;
-    border-radius: 8px;
-  }
-  .grid-item h3 {
-    font-size: 1rem;
-    font-weight: 600;
-    margin: 0.5rem 0;
-  }
-  .grid-item p {
-    font-size: 0.9rem;
-    color: #333;
-    margin: 0;
-  }
-  .grid-item .hotspot {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: white;
-    color: black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    transition: transform 0.2s ease-in-out;
-  }
-  .grid-item .hotspot:hover {
-    transform: scale(1.1);
-  }
+  .custom-grid { padding: 4rem 2rem; text-align: center; }
+  .custom-grid h2 { font-size: 2.2rem; font-weight: 700; margin-bottom: 2rem; }
+  .grid-gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  .grid-item { position: relative; overflow: hidden; border-radius: 10px; background: #fafafa; padding: 1rem; transition: box-shadow 0.2s ease-in-out; }
+  .grid-item:hover { box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
+  .grid-item img { width: 100%; height: auto; display: block; margin-bottom: 0.75rem; border-radius: 8px; }
+  .grid-item h3 { font-size: 1rem; font-weight: 600; margin: 0.5rem 0; }
+  .grid-item p { font-size: 0.9rem; color: #333; margin: 0; }
+  .grid-item .hotspot { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 50%; background: white; color: black; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: transform 0.2s ease-in-out; }
+  .grid-item .hotspot:hover { transform: scale(1.1); }
 
   /* Modal Styles */
-  .product-modal {
-    display: none;
-    position: fixed;
-    z-index: 999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background: rgba(0,0,0,0.6);
-  }
-  .product-modal-content {
-    background: #fff;
-    margin: 5% auto;
-    padding: 2rem;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 500px;
-    position: relative;
-    text-align: left;
-  }
-  .product-modal .close-modal {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 1.5rem;
-    font-weight: bold;
-    cursor: pointer;
-  }
+  .product-modal { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background: rgba(0,0,0,0.6); }
+  .product-modal-content { background: #fff; margin: 5% auto; padding: 2rem; border-radius: 10px; width: 90%; max-width: 500px; position: relative; text-align: left; }
+  .product-modal .close-modal { position: absolute; top: 10px; right: 15px; font-size: 1.5rem; font-weight: bold; cursor: pointer; }
 
   .product-options { margin-top: 1rem; }
   .product-options label { display: block; margin: 0.5rem 0 0.2rem; font-weight: 600; }
@@ -146,27 +67,30 @@ document.addEventListener('DOMContentLoaded', function() {
       const productHandle = this.dataset.handle;
 
       fetch(`/products/${productHandle}.js`)
-        .then(response => response.json())
+        .then(res => res.json())
         .then(product => {
           // Build options dropdowns
           let optionsHtml = '';
           if (product.options.length > 0) {
-            product.options.forEach((opt, index) => {
+            product.options.forEach((optName, index) => {
               let valuesHtml = [...new Set(product.variants.map(v => v.options[index]))]
                 .map(val => `<option value="${val}">${val}</option>`).join('');
               optionsHtml += `
                 <div class="product-options">
-                  <label>${opt}</label>
+                  <label>${optName}</label>
                   <select data-option-index="${index}">${valuesHtml}</select>
                 </div>`;
             });
           }
 
+          // Format price in dollars
+          const firstVariantPrice = (product.variants[0].price / 100).toFixed(2);
+
           modalInner.innerHTML = `
             <h2>${product.title}</h2>
             <img src="${product.images[0]}" style="width:100%; border-radius:8px; margin-bottom:1rem;" />
             <p>${product.description}</p>
-            <p style="font-weight:bold; margin-top:1rem;">Price: ${product.variants[0].price}</p>
+            <p style="font-weight:bold; margin-top:1rem;">Price: $${firstVariantPrice}</p>
             ${optionsHtml}
             <div class="add-to-cart-btn">Add to Cart</div>
           `;
@@ -177,7 +101,6 @@ document.addEventListener('DOMContentLoaded', function() {
             let selectedOptions = [];
             selects.forEach(s => selectedOptions.push(s.value));
 
-            // Find matching variant
             let variant = product.variants.find(v => 
               v.options.every((optVal, i) => optVal === selectedOptions[i])
             );
@@ -212,20 +135,13 @@ document.addEventListener('DOMContentLoaded', function() {
 {
   "name": "Custom Product Grid",
   "settings": [
-    {
-      "type": "text",
-      "id": "grid_title",
-      "label": "Grid Title",
-      "default": "Tisso vision in the wild"
-    }
+    { "type": "text", "id": "grid_title", "label": "Grid Title", "default": "Tisso vision in the wild" }
   ],
   "blocks": [
     {
       "type": "product",
       "name": "Product",
-      "settings": [
-        { "type": "product", "id": "product", "label": "Select Product" }
-      ]
+      "settings": [ { "type": "product", "id": "product", "label": "Select Product" } ]
     }
   ],
   "max_blocks": 6,
