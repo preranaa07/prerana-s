@@ -1,48 +1,38 @@
 <style>
-.custom-grid { padding: 4rem 2rem; text-align: center; }
-.custom-grid h2 { font-size: 2.2rem; font-weight: 700; margin-bottom: 2rem; }
-.grid-gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
-.grid-item { position: relative; overflow: hidden; border-radius: 10px; background: #fafafa; padding: 1rem; transition: box-shadow 0.2s ease-in-out; }
-.grid-item:hover { box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
-.grid-item img { width: 100%; height: auto; display: block; margin-bottom: 0.75rem; border-radius: 8px; }
-.grid-item h3 { font-size: 1rem; font-weight: 600; margin: 0.5rem 0; }
-.grid-item p { font-size: 0.9rem; color: #333; margin: 0; }
-.grid-item .hotspot { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 50%; background: white; color: black; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: transform 0.2s ease-in-out; }
-.grid-item .hotspot:hover { transform: scale(1.1); }
+  .custom-grid { padding: 4rem 2rem; text-align: center; }
+  .custom-grid h2 { font-size: 2.2rem; font-weight: 700; margin-bottom: 2rem; }
+  .grid-gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  .grid-item { position: relative; overflow: hidden; border-radius: 10px; background: #fafafa; padding: 1rem; transition: box-shadow 0.2s ease-in-out; }
+  .grid-item:hover { box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
+  .grid-item img { width: 100%; height: auto; display: block; margin-bottom: 0.75rem; border-radius: 8px; }
+  .grid-item h3 { font-size: 1rem; font-weight: 600; margin: 0.5rem 0; }
+  .grid-item p { font-size: 0.9rem; color: #333; margin: 0; }
+  .grid-item .hotspot { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 50%; background: white; color: black; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: transform 0.2s ease-in-out; }
+  .grid-item .hotspot:hover { transform: scale(1.1); }
 
-/* Modal Styles */
-.product-modal { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background: rgba(0,0,0,0.6); }
-.product-modal-content { background: #fff; margin: 5% auto; padding: 2rem; border-radius: 10px; width: 90%; max-width: 500px; position: relative; text-align: left; }
-.product-modal .close-modal { position: absolute; top: 10px; right: 15px; font-size: 1.5rem; font-weight: bold; cursor: pointer; }
+  /* Modal Styles */
+  .product-modal { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background: rgba(0,0,0,0.6); }
+  .product-modal-content { background: #fff; margin: 5% auto; padding: 2rem; border-radius: 10px; width: 90%; max-width: 500px; position: relative; text-align: left; }
+  .product-modal .close-modal { position: absolute; top: 10px; right: 15px; font-size: 1.5rem; font-weight: bold; cursor: pointer; }
 
-/* Add to cart toast modal */
-#cart-toast-modal {
-  display: none;
-  position: fixed;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  background: #fff;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-  z-index: 10000;
-  text-align: center;
-}
-#cart-toast-modal p { margin-bottom: 1rem; font-size: 1rem; font-weight: 500; }
-#cart-toast-modal button {
-  background: #000; color: #fff; padding: 0.6rem 1.2rem;
-  border-radius: 6px; border: none; cursor: pointer;
-  font-weight: 600;
-}
+  .product-options { margin-top: 1rem; }
+  .product-options label { display: block; margin: 0.5rem 0 0.2rem; font-weight: 600; }
+  .product-options select { width: 100%; padding: 0.4rem; margin-bottom: 0.8rem; border-radius: 5px; border: 1px solid #ccc; }
+  .add-to-cart-btn { display: inline-block; margin-top: 1rem; background:#000; color:#fff; padding:0.5rem 1rem; border-radius:5px; cursor:pointer; text-align:center; width:100%; }
+
+  /* Toast */
+  #cart-toast { position: fixed; bottom: 20px; right: 20px; background: #000; color: #fff; padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); opacity: 0; transform: translateY(20px); transition: all 0.3s ease-in-out; z-index: 9999; }
 </style>
 
 <section class="custom-grid">
   <h2>{{ section.settings.grid_title }}</h2>
+
   <div class="grid-gallery">
     {% for block in section.blocks %}
       {% if block.settings.product != blank %}
         {% assign product = all_products[block.settings.product] %}
         {% assign first_available_variant = product.variants | where: "available", true | first %}
+
         <div class="grid-item">
           <img src="{{ product.featured_image | img_url: '500x' }}" alt="{{ product.title }}">
           <h3>{{ product.title }}</h3>
@@ -60,7 +50,7 @@
   </div>
 </section>
 
-<!-- Product Modal -->
+<!-- Modal -->
 <div id="product-modal" class="product-modal">
   <div class="product-modal-content">
     <span class="close-modal">&times;</span>
@@ -68,22 +58,26 @@
   </div>
 </div>
 
-<!-- Centered Cart Toast Modal -->
-<div id="cart-toast-modal">
-  <p>Product added to cart!</p>
-  <button onclick="window.location.href='/cart'">View Cart</button>
-</div>
+<!-- Toast -->
+<div id="cart-toast">Item added to cart!</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+
   const modal = document.getElementById('product-modal');
   const modalInner = document.getElementById('modal-content-inner');
   const closeBtn = document.querySelector('.close-modal');
-  const toastModal = document.getElementById('cart-toast-modal');
+  const toast = document.getElementById('cart-toast');
+  const DARK_WINTER_JACKET_ID = 52989197320564; 
 
-  function showToast() {
-    toastModal.style.display = 'block';
-    setTimeout(() => { toastModal.style.display = 'none'; }, 3000);
+  function showToast(message) {
+    toast.textContent = message;
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateY(0)';
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(20px)';
+    }, 2000);
   }
 
   document.querySelectorAll('.grid-item .hotspot').forEach(btn => {
@@ -91,15 +85,17 @@ document.addEventListener('DOMContentLoaded', function() {
       e.preventDefault();
       const product = JSON.parse(this.dataset.product);
 
+      // Build options dropdowns
       let optionsHtml = '';
       if (product.options.length > 0) {
         product.options.forEach((optName, index) => {
-          const valuesHtml = [...new Set(product.variants.map(v => v.options[index]))]
+          let valuesHtml = [...new Set(product.variants.map(v => v.options[index]))]
             .map(val => `<option value="${val}">${val}</option>`).join('');
-          optionsHtml += `<div class="product-options">
-            <label>${optName}</label>
-            <select data-option-index="${index}">${valuesHtml}</select>
-          </div>`;
+          optionsHtml += `
+            <div class="product-options">
+              <label>${optName}</label>
+              <select data-option-index="${index}">${valuesHtml}</select>
+            </div>`;
         });
       }
 
@@ -118,6 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const addBtn = modalInner.querySelector('.add-to-cart-btn');
       const selects = modalInner.querySelectorAll('select');
 
+      // Update price dynamically on option change
       selects.forEach(s => {
         s.addEventListener('change', () => {
           const selectedOptions = Array.from(selects).map(sel => sel.value);
@@ -125,38 +122,41 @@ document.addEventListener('DOMContentLoaded', function() {
             v.options.every((optVal, i) => optVal.trim().toLowerCase() === selectedOptions[i].trim().toLowerCase())
           );
           if (variant) {
-            priceElement.textContent = 'Price: $' + (variant.price / 100).toFixed(2);
+            priceElement.textContent = 'Price: $' + (variant.price/100).toFixed(2);
           }
         });
       });
 
+      // Add to cart click
       addBtn.addEventListener('click', () => {
         const selectedOptions = Array.from(selects).map(sel => sel.value);
         const variant = product.variants.find(v => 
           v.options.every((optVal, i) => optVal.trim().toLowerCase() === selectedOptions[i].trim().toLowerCase())
         );
 
-        if (!variant) { alert('Selected variant not available'); return; }
+        if (!variant) { showToast('Selected variant not available'); return; }
 
+        // Add selected product
         fetch('/cart/add.js', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id: variant.id, quantity: 1 })
         }).then(res => res.json())
-          .then(() => {
-            const colorIndex = product.options.findIndex(o => o.toLowerCase() === 'color');
-            const sizeIndex = product.options.findIndex(o => o.toLowerCase() === 'size');
-            const color = selectedOptions[colorIndex] || '';
-            const size = selectedOptions[sizeIndex] || '';
-            if (color.trim().toLowerCase() === 'black' && size.trim().toLowerCase() === 'medium') {
+          .then(data => {
+            // Auto-add Dark Winter Jacket for any Black + Medium
+            const isBlackMedium = selectedOptions.some(o => o.trim().toLowerCase() === 'black') &&
+                                  selectedOptions.some(o => o.trim().toLowerCase() === 'medium');
+
+            if (isBlackMedium) {
               fetch('/cart/add.js', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: 52989197320564, quantity: 1 })
+                body: JSON.stringify({ id: DARK_WINTER_JACKET_ID, quantity: 1 })
               });
             }
+
+            showToast('Product added to cart!');
             modal.style.display = 'none';
-            showToast();
           });
       });
 
@@ -168,3 +168,21 @@ document.addEventListener('DOMContentLoaded', function() {
   window.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
 });
 </script>
+
+{% schema %}
+{
+  "name": "Custom Product Grid",
+  "settings": [
+    { "type": "text", "id": "grid_title", "label": "Grid Title", "default": "Tisso vision in the wild" }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "settings": [ { "type": "product", "id": "product", "label": "Select Product" } ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [{ "name": "Custom Product Grid" }]
+}
+{% endschema %}
