@@ -71,11 +71,19 @@
     {% for block in section.blocks %}
       {% if block.settings.product != blank %}
         {% assign product = all_products[block.settings.product] %}
+        {% assign first_variant = product.selected_or_first_available_variant %}
+        
         <div class="grid-item">
           <a href="{{ product.url }}">
             <img src="{{ product.featured_image | img_url: '500x' }}" alt="{{ product.title }}">
             <h3>{{ product.title }}</h3>
-            <p>{{ product.price | money }}</p>
+            <p>
+              {% if first_variant.available %}
+                {{ first_variant.price | money }}
+              {% else %}
+                <span style="color:red;">Sold Out</span>
+              {% endif %}
+            </p>
           </a>
           <div class="hotspot">+</div>
         </div>
