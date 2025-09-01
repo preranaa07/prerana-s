@@ -14,7 +14,8 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.35); /* lighter overlay */
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(4px);
     z-index: 1;
   }
 
@@ -27,36 +28,44 @@
     z-index: 0;
   }
 
-  /* --- Top strip --- */
-  .banner-top {
+  /* === Strips === */
+  .banner-top,
+  .banner-content,
+  .banner-footer {
     position: relative;
     z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.8rem;
-    font-size: 0.85rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
     padding: 1rem;
   }
 
+  /* Top strip */
+  .banner-top {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: rgba(0, 0, 0, 0.55);
+    padding: 0.8rem 1.2rem;
+  }
+
   .banner-top img {
-    height: 32px;
+    height: 38px;
     width: auto;
   }
 
-  /* --- Middle strip --- */
+  /* Middle strip */
   .banner-content {
-    position: relative;
-    z-index: 2;
-    max-width: 700px;
+    max-width: 750px;
     margin: 0 auto;
-    padding: 2rem 1.2rem;
+    background: rgba(0, 0, 0, 0.45);
+    padding: 3rem 2rem;
+    border-radius: 8px;
   }
 
   .banner-content h1 {
-    font-size: 3rem;
+    font-size: 3.2rem;
     font-weight: 800;
     margin-bottom: 1rem;
     line-height: 1.2;
@@ -66,7 +75,7 @@
     font-size: 1.2rem;
     margin-bottom: 2rem;
     line-height: 1.6;
-    color: #f5f5f5;
+    color: #f0f0f0;
   }
 
   .banner-buttons {
@@ -80,12 +89,12 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.9rem 2rem;
+    padding: 1rem 2.2rem;
     font-weight: 600;
     text-decoration: none;
-    font-size: 1rem;
+    font-size: 1.05rem;
     letter-spacing: 1px;
-    border-radius: 50px; /* smoother button */
+    border-radius: 6px;
     border: 2px solid #fff;
     transition: all 0.25s ease;
   }
@@ -112,40 +121,46 @@
 
   .banner-buttons a::after {
     content: "→";
-    margin-left: 8px;
-    font-size: 1.1rem;
+    margin-left: 10px;
+    font-size: 1.2rem;
     transition: transform 0.2s ease-in-out;
   }
 
   .banner-buttons a:hover::after {
-    transform: translateX(5px);
+    transform: translateX(6px);
   }
 
-  /* --- Bottom strip --- */
+  /* Bottom strip */
   .banner-footer {
-    position: relative;
-    z-index: 2;
-    font-size: 0.85rem;
-    letter-spacing: 1.5px;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
     text-transform: uppercase;
+    background: rgba(0, 0, 0, 0.65);
     padding: 1rem;
-    opacity: 0.85;
   }
 
-  /* --- Mobile --- */
+  /* Mobile tweaks */
   @media (max-width: 768px) {
     .custom-banner {
-      min-height: 70vh;
+      min-height: 65vh;
+    }
+    .banner-top {
+      flex-direction: column;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+    }
+    .banner-content {
+      padding: 2rem 1.2rem;
     }
     .banner-content h1 {
-      font-size: 2.2rem;
+      font-size: 2.4rem;
     }
     .banner-content p {
       font-size: 1rem;
     }
     .banner-buttons a {
-      padding: 0.7rem 1.4rem;
-      font-size: 0.9rem;
+      padding: 0.8rem 1.5rem;
+      font-size: 0.95rem;
     }
   }
 </style>
@@ -190,3 +205,72 @@
     <div class="banner-footer">{{ section.settings.footer_text }}</div>
   {% endif %}
 </section>
+
+{% schema %}
+{
+  "name": "Custom Banner",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "Background Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_image",
+      "label": "Logo Image"
+    },
+    {
+      "type": "text",
+      "id": "top_tagline",
+      "label": "Top Tagline",
+      "default": "SUSTAINABLE FASHION"
+    },
+    {
+      "type": "text",
+      "id": "headline",
+      "label": "Headline",
+      "default": "The Gift Guide"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Discover Joy: Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gifts to delight your loved ones this holiday season."
+    },
+    {
+      "type": "text",
+      "id": "primary_button_text",
+      "label": "Primary Button Text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "primary_button_link",
+      "label": "Primary Button Link"
+    },
+    {
+      "type": "text",
+      "id": "secondary_button_text",
+      "label": "Secondary Button Text",
+      "default": "Choose Gift"
+    },
+    {
+      "type": "url",
+      "id": "secondary_button_link",
+      "label": "Secondary Button Link"
+    },
+    {
+      "type": "text",
+      "id": "footer_text",
+      "label": "Footer Text",
+      "default": "SUSTAINABLE, ETHICALLY MADE CLOTHES IN SIZES XXS TO 6XL"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Banner"
+    }
+  ]
+}
+{% endschema %}
