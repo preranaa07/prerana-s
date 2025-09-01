@@ -1,7 +1,19 @@
 <style>
   .custom-grid { padding: 4rem 2rem; text-align: center; }
   .custom-grid h2 { font-size: 2.2rem; font-weight: 700; margin-bottom: 2rem; }
-  .grid-gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+
+  .grid-gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+  @media (max-width: 1024px) {
+    .grid-gallery { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .grid-gallery { grid-template-columns: 1fr; }
+  }
+
   .grid-item { position: relative; overflow: hidden; border-radius: 10px; background: #fafafa; padding: 1rem; transition: box-shadow 0.2s ease-in-out; }
   .grid-item:hover { box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
   .grid-item img { width: 100%; height: auto; display: block; margin-bottom: 0.75rem; border-radius: 8px; }
@@ -10,15 +22,16 @@
   .grid-item .hotspot { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 50%; background: white; color: black; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: transform 0.2s ease-in-out; }
   .grid-item .hotspot:hover { transform: scale(1.1); }
 
-  /* Modal Styles */
-  .product-modal { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background: rgba(0,0,0,0.6); }
-  .product-modal-content { background: #fff; margin: 5% auto; padding: 2rem; border-radius: 10px; width: 90%; max-width: 500px; position: relative; text-align: left; }
+  /* Modal */
+  .product-modal { display: none; position: fixed; z-index: 999; inset: 0; background: rgba(0,0,0,0.6); }
+  .product-modal-content { background: #fff; margin: 5% auto; padding: 2rem; border-radius: 10px; width: 90%; max-width: 520px; position: relative; text-align: left; }
   .product-modal .close-modal { position: absolute; top: 10px; right: 15px; font-size: 1.5rem; font-weight: bold; cursor: pointer; }
 
   .product-options { margin-top: 1rem; }
   .product-options label { display: block; margin: 0.5rem 0 0.2rem; font-weight: 600; }
-  .product-options select { width: 100%; padding: 0.4rem; margin-bottom: 0.8rem; border-radius: 5px; border: 1px solid #ccc; }
-  .add-to-cart-btn { display: inline-block; margin-top: 1rem; background:#000; color:#fff; padding:0.5rem 1rem; border-radius:5px; cursor:pointer; text-align:center; width:100%; }
+  .product-options select { width: 100%; padding: 0.45rem; margin-bottom: 0.8rem; border-radius: 6px; border: 1px solid #ddd; }
+  .add-to-cart-btn { display: inline-block; margin-top: 1rem; background:#000; color:#fff; padding:0.7rem 1rem; border-radius:6px; cursor:pointer; text-align:center; width:100%; }
+  .add-to-cart-btn[disabled] { opacity: 0.6; cursor: not-allowed; }
 
   /* Toast */
   #cart-toast { position: fixed; bottom: 20px; right: 20px; background: #000; color: #fff; padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); opacity: 0; transform: translateY(20px); transition: all 0.3s ease-in-out; z-index: 9999; }
@@ -43,17 +56,24 @@
               <span style="color:red;">Sold Out</span>
             {% endif %}
           </p>
-          <div class="hotspot" data-product='{{ product | json }}'>+</div>
+          <!-- Embed full product JSON for the modal (safe, no jQuery) -->
+          <div class="hotspot" aria-label="Quick view" role="button" tabindex="0" data-product='{{ product | json }}'>+</div>
         </div>
       {% endif %}
     {% endfor %}
   </div>
 </section>
 
+<!-- Bonus (Soft Winter Jacket) product JSON (selected in section settings) -->
+{% if section.settings.bonus_product != blank %}
+  {% assign bonus_product = all_products[section.settings.bonus_product] %}
+  <script id="bonus-product-data" type="application/json">{{ bonus_product | json }}</script>
+{% endif %}
+
 <!-- Modal -->
-<div id="product-modal" class="product-modal">
-  <div class="product-modal-content">
-    <span class="close-modal">&times;</span>
+<div id="product-modal" class="product-modal" aria-hidden="true">
+  <div class="product-modal-content" role="dialog" aria-modal="true">
+    <span class="close-modal" aria-label="Close">&times;</span>
     <div id="modal-content-inner"></div>
   </div>
 </div>
@@ -63,12 +83,17 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-
   const modal = document.getElementById('product-modal');
   const modalInner = document.getElementById('modal-content-inner');
   const closeBtn = document.querySelector('.close-modal');
   const toast = document.getElementById('cart-toast');
-  const DARK_WINTER_JACKET_ID = 52989197320564; 
+
+  // Read bonus product (Soft Winter Jacket) once from the embedded JSON
+  let bonusProduct = null;
+  const bonusNode = document.getElementById('bonus-product-data');
+  if (bonusNode) {
+    try { bonusProduct = JSON.parse(bonusNode.textContent); } catch (e) { bonusProduct = null; }
+  }
 
   function showToast(message) {
     toast.textContent = message;
@@ -77,95 +102,145 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
       toast.style.opacity = '0';
       toast.style.transform = 'translateY(20px)';
-    }, 2000);
+    }, 2200);
   }
 
-  document.querySelectorAll('.grid-item .hotspot').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      e.preventDefault();
-      const product = JSON.parse(this.dataset.product);
+  function formatMoney(cents) {
+    if (window.Shopify && typeof Shopify.formatMoney === 'function') {
+      return Shopify.formatMoney(cents, "{{ shop.money_format | replace: '"', '\"' }}");
+    }
+    return (cents/100).toFixed(2);
+  }
 
+  function openModal(html) {
+    modalInner.innerHTML = html;
+    modal.style.display = 'block';
+    modal.setAttribute('aria-hidden', 'false');
+  }
+  function closeModal() {
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden', 'true');
+    modalInner.innerHTML = '';
+  }
+
+  // Handle open via click/keyboard
+  document.querySelectorAll('.grid-item .hotspot').forEach(btn => {
+    const open = (product) => {
       // Build options dropdowns
       let optionsHtml = '';
-      if (product.options.length > 0) {
-        product.options.forEach((optName, index) => {
-          let valuesHtml = [...new Set(product.variants.map(v => v.options[index]))]
-            .map(val => `<option value="${val}">${val}</option>`).join('');
-          optionsHtml += `
-            <div class="product-options">
-              <label>${optName}</label>
-              <select data-option-index="${index}">${valuesHtml}</select>
-            </div>`;
-        });
-      }
+      const optionNames = product.options || [];
+      const variants = product.variants || [];
 
-      const firstVariantPrice = (product.variants[0].price / 100).toFixed(2);
+      // Unique values per option index
+      optionNames.forEach((optName, index) => {
+        const values = Array.from(new Set(variants.map(v => (v.options && v.options[index]) || '').filter(Boolean)));
+        const valuesHtml = values.map(val => `<option value="${val}">${val}</option>`).join('');
+        optionsHtml += `
+          <div class="product-options">
+            <label>${optName}</label>
+            <select data-option-index="${index}">${valuesHtml}</select>
+          </div>`;
+      });
 
-      modalInner.innerHTML = `
-        <h2>${product.title}</h2>
-        <img src="${product.images[0]}" style="width:100%; border-radius:8px; margin-bottom:1rem;" />
-        <p>${product.description}</p>
-        <p style="font-weight:bold; margin-top:1rem;" id="variant-price">Price: $${firstVariantPrice}</p>
+      const firstVariant = variants[0];
+      const imgSrc = (product.images && product.images[0] && (product.images[0].src || product.images[0].url)) || product.featured_image || '';
+      const description = product.body_html ? product.body_html.replace(/<[^>]*>?/gm, '') : (product.description || '');
+
+      const html = `
+        <h2 style="margin-top:0">${product.title}</h2>
+        ${imgSrc ? `<img src="${imgSrc}" alt="${product.title}" style="width:100%; border-radius:8px; margin-bottom:1rem;" />` : ''}
+        <p>${description}</p>
+        <p style="font-weight:bold; margin-top:1rem;" id="variant-price">Price: ${formatMoney(firstVariant ? firstVariant.price : 0)}</p>
         ${optionsHtml}
-        <div class="add-to-cart-btn">Add to Cart</div>
+        <button class="add-to-cart-btn">Add to Cart</button>
       `;
+
+      openModal(html);
 
       const priceElement = modalInner.querySelector('#variant-price');
       const addBtn = modalInner.querySelector('.add-to-cart-btn');
       const selects = modalInner.querySelectorAll('select');
 
+      // Preselect to first variant's options if available, so lookups work consistently
+      if (firstVariant && selects.length === (firstVariant.options ? firstVariant.options.length : 0)) {
+        selects.forEach((sel, i) => {
+          const want = (firstVariant.options && firstVariant.options[i]) || null;
+          if (want) { Array.from(sel.options).forEach(o => { if (o.value.toLowerCase() === want.toLowerCase()) sel.value = o.value; }); }
+        });
+      }
+
+      function findMatchingVariant() {
+        const selectedOptions = Array.from(selects).map(sel => sel.value);
+        return variants.find(v => v.options && v.options.every((optVal, i) => {
+          return (optVal || '').trim().toLowerCase() === (selectedOptions[i] || '').trim().toLowerCase();
+        }));
+      }
+
       // Update price dynamically on option change
       selects.forEach(s => {
         s.addEventListener('change', () => {
-          const selectedOptions = Array.from(selects).map(sel => sel.value);
-          const variant = product.variants.find(v => 
-            v.options.every((optVal, i) => optVal.trim().toLowerCase() === selectedOptions[i].trim().toLowerCase())
-          );
-          if (variant) {
-            priceElement.textContent = 'Price: $' + (variant.price/100).toFixed(2);
-          }
+          const variant = findMatchingVariant();
+          if (variant) priceElement.textContent = 'Price: ' + formatMoney(variant.price);
         });
       });
 
-      // Add to cart click
-      addBtn.addEventListener('click', () => {
-        const selectedOptions = Array.from(selects).map(sel => sel.value);
-        const variant = product.variants.find(v => 
-          v.options.every((optVal, i) => optVal.trim().toLowerCase() === selectedOptions[i].trim().toLowerCase())
-        );
-
+      // Add to cart (atomic add; adds bonus product when needed)
+      addBtn.addEventListener('click', async () => {
+        const variant = findMatchingVariant();
         if (!variant) { showToast('Selected variant not available'); return; }
 
-        // Add selected product
-        fetch('/cart/add.js', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: variant.id, quantity: 1 })
-        }).then(res => res.json())
-          .then(data => {
-            // Auto-add Dark Winter Jacket for any Black + Medium
-            const isBlackMedium = selectedOptions.some(o => o.trim().toLowerCase() === 'black') &&
-                                  selectedOptions.some(o => o.trim().toLowerCase() === 'medium');
+        // Condition: any product with options (Color = Black) AND (Size = Medium)
+        const selectedOptions = Array.from(selects).map(sel => sel.value.trim().toLowerCase());
+        const hasBlack = selectedOptions.includes('black');
+        const hasMedium = selectedOptions.includes('medium');
 
-            if (isBlackMedium) {
-              fetch('/cart/add.js', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: DARK_WINTER_JACKET_ID, quantity: 1 })
-              });
-            }
+        const items = [{ id: variant.id, quantity: 1 }];
 
-            showToast('Product added to cart!');
-            modal.style.display = 'none';
+        if (hasBlack && hasMedium && bonusProduct) {
+          // choose first available variant of bonus product; fallback to first
+          const bonusVariants = bonusProduct.variants || [];
+          const bonusAvailable = bonusVariants.find(v => v.available) || bonusVariants[0];
+          if (bonusAvailable) {
+            items.push({ id: bonusAvailable.id, quantity: 1, properties: { _auto_added: 'Soft Winter Jacket' } });
+          }
+        }
+
+        try {
+          addBtn.disabled = true;
+          const res = await fetch('/cart/add.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items })
           });
+          if (!res.ok) throw new Error('Add to cart failed');
+          await res.json();
+          showToast(items.length > 1 ? 'Products added to cart!' : 'Product added to cart!');
+          closeModal();
+        } catch (err) {
+          console.error(err);
+          showToast('Could not add to cart');
+        } finally {
+          addBtn.disabled = false;
+        }
       });
+    };
 
-      modal.style.display = 'block';
-    });
+    const onOpen = (e) => {
+      e.preventDefault();
+      const product = JSON.parse(btn.dataset.product);
+      open(product);
+    };
+    const onKey = (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { onOpen(e); }
+    };
+    btn.addEventListener('click', onOpen);
+    btn.addEventListener('keydown', onKey);
   });
 
-  closeBtn.addEventListener('click', () => modal.style.display = 'none');
-  window.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
+  // Modal close behavior
+  closeBtn.addEventListener('click', closeModal);
+  window.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+  window.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 });
 </script>
 
@@ -173,7 +248,13 @@ document.addEventListener('DOMContentLoaded', function() {
 {
   "name": "Custom Product Grid",
   "settings": [
-    { "type": "text", "id": "grid_title", "label": "Grid Title", "default": "Tisso vision in the wild" }
+    { "type": "text", "id": "grid_title", "label": "Grid Title", "default": "Tisso vision in the wild" },
+    {
+      "type": "product",
+      "id": "bonus_product",
+      "label": "Soft Winter Jacket (auto-add product)",
+      "info": "Select the 'Soft Winter Jacket' product that should be auto-added when a Black + Medium item is added to cart."
+    }
   ],
   "blocks": [
     {
