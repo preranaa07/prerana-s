@@ -143,10 +143,14 @@
         "type": "ecomx-banner",
         "settings": {
           "bg_image": "shopify://shop_images/banner-the-concept-of-minimalist-fashion-clothes-women-s-blouses-and-t-shirts-on-a-hanger-on-a-white-background-with-copy-space-fashion-blog-website-social-media-post-photo.jpg",
-          "headline": "Your Banner Headline",
-          "subtext": "Your supporting text goes here.",
-          "button_text": "Shop Now",
-          "button_link": ""
+          "top_tagline": "FIND THE IDEAL GIFT FOR YOUR LOVED ONES",
+          "headline": "The Gift Guide",
+          "subtext": "Discover Joy: Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gifts to delight your loved ones this holiday season.",
+          "primary_button_text": "Shop Now",
+          "primary_button_link": "",
+          "secondary_button_text": "Choose Gift",
+          "secondary_button_link": "",
+          "footer_text": "SUSTAINABLE, ETHICALLY MADE CLOTHES IN SIZES XXS TO 6XL"
         }
       },
       "ecomx-grid": {
