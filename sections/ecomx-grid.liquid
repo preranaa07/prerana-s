@@ -69,6 +69,7 @@
   <div id="toast-msg"></div>
   <p class="toast-extra">🙌 Thanks for shopping with us!</p>
   <p class="toast-extra">🛒 You can view your cart anytime.</p>
+  <p class="toast-extra">🚚 Fast shipping & easy returns.</p>
   <button onclick="window.location.href='/cart'" class="toast-btn">Go to Cart</button>
 </div>
 
@@ -108,7 +109,7 @@
 .modal {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0,0,0,0.5);
   backdrop-filter: blur(6px);
   z-index: 9999;
   display: flex;
@@ -172,23 +173,24 @@
   position: fixed;
   top: 20%; left: 50%;
   transform: translateX(-50%);
-  background: #222;
+  background: rgba(34,34,34,0.95);
+  backdrop-filter: blur(8px);
   color: #fff;
-  padding: 30px 24px;
-  border-radius: 14px;
+  padding: 40px 28px;
+  border-radius: 16px;
   text-align: center;
   z-index: 10000;
   min-width: 340px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.3);
 }
 .toast.hidden { display: none; }
-.toast p { margin: 10px 0; }
-.toast-extra { font-size: 0.95rem; opacity: 0.85; }
+.toast p { margin: 12px 0; }
+.toast-extra { font-size: 1rem; opacity: 0.9; }
 .toast-btn {
-  margin-top: 14px;
-  padding: 12px 20px;
+  margin-top: 16px;
+  padding: 14px 22px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   background: #fff;
   color: #111;
   font-weight: 600;
@@ -197,11 +199,11 @@
 .toast-btn:hover { background: #ddd; }
 .toast-close {
   position: absolute;
-  top: 8px; right: 10px;
+  top: 10px; right: 12px;
   background: none;
   border: none;
   color: #fff;
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   cursor: pointer;
 }
 </style>
