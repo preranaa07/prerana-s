@@ -184,58 +184,45 @@ document.addEventListener('DOMContentLoaded', function() {
         });
       });
 
-      // Add to cart (atomic add; adds bonus product when needed)
-      addBtn.addEventListener('click', async () => {
-        const variant = findMatchingVariant();
-        if (!variant) { showToast('Selected variant not available'); return; }
+// Add to cart (atomic add; adds bonus product when needed)
+addBtn.addEventListener('click', async () => {
+  const variant = findMatchingVariant();
+  if (!variant) { showToast('Selected variant not available'); return; }
 
-        // Condition: any product with options (Color = Black) AND (Size = Medium)
-        const selectedOptions = Array.from(selects).map(sel => sel.value.trim().toLowerCase());
-        const hasBlack = selectedOptions.includes('black');
-        const hasMedium = selectedOptions.includes('medium');
+  // Condition: any product with options (Color = Black) AND (Size = Medium or M)
+  const selectedOptions = Array.from(selects).map(sel => sel.value.trim().toLowerCase());
+  const hasBlack = selectedOptions.includes('black');
+  const hasMedium = selectedOptions.includes('medium') || selectedOptions.includes('m');
 
-        const items = [{ id: variant.id, quantity: 1 }];
+  const items = [{ id: variant.id, quantity: 1 }];
 
-        if (hasBlack && hasMedium && bonusProduct) {
-          // choose first available variant of bonus product; fallback to first
-          const bonusVariants = bonusProduct.variants || [];
-          const bonusAvailable = bonusVariants.find(v => v.available) || bonusVariants[0];
-          if (bonusAvailable) {
-            items.push({ id: bonusAvailable.id, quantity: 1, properties: { _auto_added: 'Soft Winter Jacket' } });
-          }
-        }
+  if (hasBlack && hasMedium && bonusProduct) {
+    // choose first available variant of bonus product; fallback to first
+    const bonusVariants = bonusProduct.variants || [];
+    const bonusAvailable = bonusVariants.find(v => v.available) || bonusVariants[0];
+    if (bonusAvailable) {
+      items.push({ id: bonusAvailable.id, quantity: 1, properties: { _auto_added: 'Soft Winter Jacket' } });
+    }
+  }
 
-        try {
-          addBtn.disabled = true;
-          const res = await fetch('/cart/add.js', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ items })
-          });
-          if (!res.ok) throw new Error('Add to cart failed');
-          await res.json();
-          showToast(items.length > 1 ? 'Products added to cart!' : 'Product added to cart!');
-          closeModal();
-        } catch (err) {
-          console.error(err);
-          showToast('Could not add to cart');
-        } finally {
-          addBtn.disabled = false;
-        }
-      });
-    };
-
-    const onOpen = (e) => {
-      e.preventDefault();
-      const product = JSON.parse(btn.dataset.product);
-      open(product);
-    };
-    const onKey = (e) => {
-      if (e.key === 'Enter' || e.key === ' ') { onOpen(e); }
-    };
-    btn.addEventListener('click', onOpen);
-    btn.addEventListener('keydown', onKey);
-  });
+  try {
+    addBtn.disabled = true;
+    const res = await fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items })
+    });
+    if (!res.ok) throw new Error('Add to cart failed');
+    await res.json();
+    showToast(items.length > 1 ? 'Products added to cart!' : 'Product added to cart!');
+    closeModal();
+  } catch (err) {
+    console.error(err);
+    showToast('Could not add to cart');
+  } finally {
+    addBtn.disabled = false;
+  }
+});
 
   // Modal close behavior
   closeBtn.addEventListener('click', closeModal);
@@ -267,3 +254,4 @@ document.addEventListener('DOMContentLoaded', function() {
   "presets": [{ "name": "Custom Product Grid" }]
 }
 {% endschema %}
+
