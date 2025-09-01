@@ -15,8 +15,8 @@
     position: absolute;
     inset: 0;
     background: rgba(0, 0, 0, 0.45);
-    backdrop-filter: blur(2px);
-    z-index: 0; /* 👈 FIXED: put overlay behind content */
+    backdrop-filter: blur(4px);
+    z-index: 1;
   }
 
   .custom-banner img.bg {
@@ -25,7 +25,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    z-index: -1; /* 👈 stays at very back */
+    z-index: 0;
   }
 
   /* === Strips === */
@@ -33,7 +33,7 @@
   .banner-content,
   .banner-footer {
     position: relative;
-    z-index: 1; /* 👈 ensures content shows above overlay */
+    z-index: 2;
     padding: 1rem;
   }
 
@@ -48,9 +48,6 @@
     text-transform: uppercase;
     background: rgba(0, 0, 0, 0.55);
     padding: 0.8rem 1.2rem;
-    border-radius: 6px;
-    display: inline-flex;
-    margin: 1rem auto;
   }
 
   .banner-top img {
@@ -140,9 +137,6 @@
     text-transform: uppercase;
     background: rgba(0, 0, 0, 0.65);
     padding: 1rem;
-    border-radius: 6px;
-    display: inline-block;
-    margin: 1rem auto;
   }
 
   /* Mobile tweaks */
@@ -170,3 +164,113 @@
     }
   }
 </style>
+
+<section class="custom-banner">
+  {% if section.settings.bg_image != blank %}
+    <img src="{{ section.settings.bg_image | img_url: '1600x' }}" alt="Banner Background" class="bg">
+  {% endif %}
+
+  <!-- Top strip -->
+  <div class="banner-top">
+    {% if section.settings.logo_image != blank %}
+      <img src="{{ section.settings.logo_image | img_url: '200x' }}" alt="Banner Logo">
+    {% endif %}
+    {% if section.settings.top_tagline != blank %}
+      <span>{{ section.settings.top_tagline }}</span>
+    {% endif %}
+  </div>
+
+  <!-- Middle strip -->
+  <div class="banner-content">
+    <h1>{{ section.settings.headline }}</h1>
+    <p>{{ section.settings.subtext }}</p>
+
+    <div class="banner-buttons">
+      {% if section.settings.primary_button_text != blank %}
+        <a href="{{ section.settings.primary_button_link }}" class="btn-primary">
+          {{ section.settings.primary_button_text }}
+        </a>
+      {% endif %}
+
+      {% if section.settings.secondary_button_text != blank %}
+        <a href="{{ section.settings.secondary_button_link }}" class="btn-secondary">
+          {{ section.settings.secondary_button_text }}
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Bottom strip -->
+  {% if section.settings.footer_text != blank %}
+    <div class="banner-footer">{{ section.settings.footer_text }}</div>
+  {% endif %}
+</section>
+
+{% schema %}
+{
+  "name": "Custom Banner",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "Background Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_image",
+      "label": "Logo Image"
+    },
+    {
+      "type": "text",
+      "id": "top_tagline",
+      "label": "Top Tagline",
+      "default": "SUSTAINABLE FASHION"
+    },
+    {
+      "type": "text",
+      "id": "headline",
+      "label": "Headline",
+      "default": "The Gift Guide"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Discover Joy: Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gifts to delight your loved ones this holiday season."
+    },
+    {
+      "type": "text",
+      "id": "primary_button_text",
+      "label": "Primary Button Text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "primary_button_link",
+      "label": "Primary Button Link"
+    },
+    {
+      "type": "text",
+      "id": "secondary_button_text",
+      "label": "Secondary Button Text",
+      "default": "Choose Gift"
+    },
+    {
+      "type": "url",
+      "id": "secondary_button_link",
+      "label": "Secondary Button Link"
+    },
+    {
+      "type": "text",
+      "id": "footer_text",
+      "label": "Footer Text",
+      "default": "SUSTAINABLE, ETHICALLY MADE CLOTHES IN SIZES XXS TO 6XL"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Banner"
+    }
+  ]
+}
+{% endschema %}
