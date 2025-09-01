@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {% schema %}
 {
   "name": "Custom Product Grid",
@@ -357,3 +358,364 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 </script>
+=======
+{% schema %}
+{
+  "name": "Custom Product Grid",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Grid Title",
+      "default": "Featured Products"
+    },
+    {
+      "type": "product",
+      "id": "bonus_product",
+      "label": "Bonus Product (auto-add)",
+      "info": "Select the product that should be auto-added when Black + Medium is selected."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Select product"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Custom Product Grid",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}
+
+<div class="custom-grid">
+  <h2>{{ section.settings.title }}</h2>
+  <div class="grid-container">
+    {% for block in section.blocks %}
+      {% assign product = all_products[block.settings.product] %}
+      {% if product %}
+        <div class="grid-item" data-product="{{ product.handle }}">
+          <img src="{{ product.featured_image | img_url: 'medium' }}" alt="{{ product.title }}">
+          <h3>{{ product.title }}</h3>
+          <p>{{ product.price | money }}</p>
+          <button class="open-popup" data-handle="{{ product.handle }}">+</button>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="product-modal" class="modal hidden">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- Background Overlay -->
+<div id="toast-overlay" class="toast-overlay hidden"></div>
+
+<!-- Toast -->
+<div id="toast" class="toast hidden">
+  <button id="toast-close" class="toast-close">&times;</button>
+  <div id="toast-msg"></div>
+  <p class="toast-extra">🙌 Thanks for shopping with us!</p>
+  <p class="toast-extra">🛒 You can view your cart anytime.</p>
+  <p class="toast-extra">🚀 Fast checkout and delivery guaranteed.</p>
+  <button onclick="window.location.href='/cart'" class="toast-btn">Go to Cart</button>
+</div>
+
+<style>
+/* Grid */
+.custom-grid { padding: 20px; }
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+@media (max-width: 768px) { .grid-container { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px) { .grid-container { grid-template-columns: 1fr; } }
+.grid-item {
+  border: 1px solid #eee;
+  padding: 15px;
+  text-align: center;
+  position: relative;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+.grid-item img { max-width: 100%; height: auto; border-radius: 6px; }
+.open-popup {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  background: #000;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(6px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal.hidden { display: none; }
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  max-width: 500px;
+  width: 90%;
+  border-radius: 12px;
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal-content .close {
+  position: absolute;
+  top: 10px; right: 15px;
+  cursor: pointer;
+  font-size: 1.5rem;
+}
+
+/* Variant styling */
+.variant-group { margin-bottom: 15px; }
+.variant-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.variant-buttons {
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.variant-btn {
+  padding: 8px 14px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  background: #f9f9f9;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.variant-btn:hover { background: #eee; }
+.variant-btn.active {
+  border-color: #000; background: #000; color: #fff;
+}
+
+/* Add to Cart button */
+.modern-add-btn {
+  width: 100%; padding: 14px;
+  font-size: 1rem; font-weight: 600;
+  border: none; border-radius: 8px;
+  background: #111; color: #fff;
+  cursor: pointer; transition: background 0.2s;
+}
+.modern-add-btn:hover { background: #333; }
+
+/* Toast overlay */
+.toast-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(6px);
+  z-index: 9998;
+}
+.toast-overlay.hidden { display: none; }
+
+/* Toast box */
+.toast {
+  position: fixed;
+  top: 15%; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(34,34,34,0.95);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  padding: 60px 50px;     /* bigger */
+  border-radius: 22px;
+  text-align: center;
+  z-index: 9999;
+  min-width: 480px;       /* wider */
+  max-width: 600px;
+  font-size: 1.4rem;
+  line-height: 1.8;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+}
+.toast.hidden { display: none; }
+.toast p { margin: 18px 0; }
+.toast-extra { font-size: 1.1rem; opacity: 0.95; }
+.toast-btn {
+  margin-top: 25px;
+  padding: 18px 36px;
+  border: none;
+  border-radius: 12px;
+  background: #fff;
+  color: #111;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+.toast-btn:hover { background: #ddd; }
+.toast-close {
+  position: absolute;
+  top: 16px; right: 22px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 2rem;
+  cursor: pointer;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('product-modal');
+  const modalBody = document.getElementById('modal-body');
+  const closeModalBtn = modal.querySelector('.close');
+  const toast = document.getElementById('toast');
+  const toastMsg = document.getElementById('toast-msg');
+  const toastClose = document.getElementById('toast-close');
+  const overlay = document.getElementById('toast-overlay');
+
+  const bonusProductHandle = "{{ section.settings.bonus_product }}";
+  let bonusProduct = null;
+
+  if (bonusProductHandle) {
+    fetch(`/products/${bonusProductHandle}.js`)
+      .then(res => res.json())
+      .then(data => bonusProduct = data)
+      .catch(err => console.error('Bonus product error:', err));
+  }
+
+  // Open modal
+  document.querySelectorAll('.open-popup').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const handle = btn.getAttribute('data-handle');
+      const res = await fetch(`/products/${handle}.js`);
+      const product = await res.json();
+
+      let optionsHTML = '';
+      product.options.forEach((opt, idx) => {
+        optionsHTML += `
+          <div class="variant-group">
+            <label>${opt.name}</label>
+            <div class="variant-buttons" data-index="${idx}">
+              ${opt.values.map((val, i) => `
+                <button type="button" class="variant-btn ${i===0 ? 'active' : ''}" data-value="${val}">${val}</button>
+              `).join('')}
+            </div>
+          </div>`;
+      });
+
+      modalBody.innerHTML = `
+        <img src="${product.featured_image}" style="max-width:100%;border-radius:8px;margin-bottom:15px;">
+        <h2 style="font-size:1.5rem;font-weight:600;margin-bottom:10px;">${product.title}</h2>
+        <p style="font-weight:600;margin-bottom:20px;">$${(product.price/100).toFixed(2)}</p>
+        ${optionsHTML}
+        <button id="add-to-cart" class="modern-add-btn">Add to Cart</button>
+      `;
+
+      // Variant selection
+      const variantGroups = modalBody.querySelectorAll('.variant-buttons');
+      variantGroups.forEach(group => {
+        group.addEventListener('click', e => {
+          if (e.target.classList.contains('variant-btn')) {
+            group.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+          }
+        });
+      });
+
+      const addBtn = modalBody.querySelector('#add-to-cart');
+      const findMatchingVariant = () => {
+        const chosen = Array.from(variantGroups).map(group => {
+          const activeBtn = group.querySelector('.variant-btn.active');
+          return activeBtn ? activeBtn.dataset.value : null;
+        });
+        return product.variants.find(v => JSON.stringify(v.options) === JSON.stringify(chosen));
+      };
+
+      addBtn.addEventListener('click', async () => {
+        const variant = findMatchingVariant();
+        if (!variant) { showToast('Variant not found'); return; }
+
+        const selectedOptions = variant.options.map(o => o.toLowerCase().trim());
+        const hasBlack = selectedOptions.includes('black');
+        const hasMedium = selectedOptions.includes('medium') || selectedOptions.includes('m');
+
+        const items = [{ id: variant.id, quantity: 1 }];
+        let bonusAdded = false;
+
+        if (hasBlack && hasMedium && bonusProduct) {
+          const bonusVar = bonusProduct.variants.find(v => v.available) || bonusProduct.variants[0];
+          if (bonusVar) {
+            items.push({ id: bonusVar.id, quantity: 1 });
+            bonusAdded = true;
+          }
+        }
+
+        try {
+          const res = await fetch('/cart/add.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items })
+          });
+          if (!res.ok) throw new Error('Add failed');
+          await res.json();
+
+          let msg = `${product.title} added to your cart 🎉`;
+          if (bonusAdded) msg = `${product.title} + ${bonusProduct.title} added to your cart 🎉`;
+
+          showToast(msg);
+          modal.classList.add('hidden');
+        } catch (err) {
+          console.error(err);
+          showToast('Error adding to cart');
+        }
+      });
+
+      modal.classList.remove('hidden');
+    });
+  });
+
+  closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
+
+  // Toast close
+  toastClose.addEventListener('click', () => {
+    toast.classList.add('hidden');
+    overlay.classList.add('hidden');
+  });
+  overlay.addEventListener('click', () => {
+    toast.classList.add('hidden');
+    overlay.classList.add('hidden');
+  });
+
+  function showToast(msg) {
+    toastMsg.textContent = msg;
+    toast.classList.remove('hidden');
+    overlay.classList.remove('hidden');
+  }
+});
+</script>
+>>>>>>> 7b00951 (New Update)
