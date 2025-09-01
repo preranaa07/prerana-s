@@ -1,10 +1,22 @@
 {
   "sections": {
     "banner": {
-      "type": "ecomx-banner"
+      "type": "ecomx-banner",
+      "settings": {
+        "heading": "Browse our latest products",
+        "subheading": "Hand-picked for you",
+        "button_label": "Shop all",
+        "button_link": "/collections/all",
+        "image": "shopify://shop_images/coat-hanger-and-shirt-seamless-pattern-vector.jpg"
+      }
     },
     "grid": {
-      "type": "ecomx-grid"
+      "type": "ecomx-grid",
+      "settings": {
+        "title": "Featured products",
+        "collection": "all",
+        "products_to_show": 8
+      }
     }
   },
   "order": [
