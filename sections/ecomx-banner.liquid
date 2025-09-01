@@ -40,9 +40,10 @@
   /* Top strip */
   .banner-top {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 1rem;
+    gap: 0.5rem;
     font-size: 0.9rem;
     letter-spacing: 2px;
     text-transform: uppercase;
@@ -53,6 +54,11 @@
   .banner-top img {
     height: 38px;
     width: auto;
+  }
+
+  .banner-top .prepend-text {
+    font-size: 1.4rem;
+    font-weight: 900;
   }
 
   /* Middle strip */
@@ -69,15 +75,6 @@
     font-weight: 800;
     margin-bottom: 1rem;
     line-height: 1.2;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-
-  .banner-content h1 .prepend-text {
-    font-weight: 900;
-    margin-right: 0.5rem;
   }
 
   .banner-content p {
@@ -154,8 +151,6 @@
       min-height: 65vh;
     }
     .banner-top {
-      flex-direction: column;
-      gap: 0.5rem;
       font-size: 0.8rem;
     }
     .banner-content {
@@ -181,6 +176,9 @@
 
   <!-- Top strip -->
   <div class="banner-top">
+    {% if section.settings.prepend_text != blank %}
+      <div class="prepend-text">{{ section.settings.prepend_text }}</div>
+    {% endif %}
     {% if section.settings.logo_image != blank %}
       <img src="{{ section.settings.logo_image | img_url: '200x' }}" alt="Banner Logo">
     {% endif %}
@@ -191,12 +189,7 @@
 
   <!-- Middle strip -->
   <div class="banner-content">
-    <h1>
-      {% if section.settings.prepend_text != blank %}
-        <span class="prepend-text">{{ section.settings.prepend_text }}</span>
-      {% endif %}
-      {{ section.settings.headline }}
-    </h1>
+    <h1>{{ section.settings.headline }}</h1>
     <p>{{ section.settings.subtext }}</p>
 
     <div class="banner-buttons">
@@ -205,7 +198,6 @@
           {{ section.settings.primary_button_text }}
         </a>
       {% endif %}
-
       {% if section.settings.secondary_button_text != blank %}
         <a href="{{ section.settings.secondary_button_link }}" class="btn-secondary">
           {{ section.settings.secondary_button_text }}
@@ -236,15 +228,15 @@
     },
     {
       "type": "text",
-      "id": "top_tagline",
-      "label": "Top Tagline",
-      "default": "SUSTAINABLE FASHION"
+      "id": "prepend_text",
+      "label": "Prepend Text (TISSO VISON)",
+      "default": "TISSO VISON"
     },
     {
       "type": "text",
-      "id": "prepend_text",
-      "label": "Text Before Headline",
-      "default": "TISSO VISON"
+      "id": "top_tagline",
+      "label": "Top Tagline",
+      "default": "SUSTAINABLE FASHION"
     },
     {
       "type": "text",
