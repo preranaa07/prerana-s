@@ -76,19 +76,10 @@
         "padding_top": 44,
         "padding_bottom": 36
       }
-    },
-    "ecomx_grid_mFeniM": {
-      "type": "ecomx-grid",
-      "name": "Custom Product Grid",
-      "settings": {
-        "title": "Featured Products",
-        "bonus_product": "dark-winter-jacket"
-      }
     }
   },
   "order": [
     "image_banner",
-    "featured_collection",
-    "ecomx_grid_mFeniM"
+    "featured_collection"
   ]
 }
