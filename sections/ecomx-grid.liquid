@@ -65,7 +65,10 @@
 
 <!-- Toast -->
 <div id="toast" class="toast hidden">
-  <p id="toast-msg"></p>
+  <button id="toast-close" class="toast-close">&times;</button>
+  <div id="toast-msg"></div>
+  <p class="toast-extra">🙌 Thanks for shopping with us!</p>
+  <p class="toast-extra">🛒 You can view your cart anytime.</p>
   <button onclick="window.location.href='/cart'" class="toast-btn">Go to Cart</button>
 </div>
 
@@ -170,16 +173,18 @@
   transform: translateX(-50%);
   background: #222;
   color: #fff;
-  padding: 20px;
-  border-radius: 10px;
+  padding: 25px 20px;
+  border-radius: 12px;
   text-align: center;
   z-index: 10000;
-  min-width: 280px;
+  min-width: 320px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 .toast.hidden { display: none; }
+.toast p { margin: 8px 0; }
+.toast-extra { font-size: 0.9rem; opacity: 0.8; }
 .toast-btn {
-  margin-top: 10px;
+  margin-top: 12px;
   padding: 10px 18px;
   border: none;
   border-radius: 6px;
@@ -189,6 +194,15 @@
   cursor: pointer;
 }
 .toast-btn:hover { background: #ddd; }
+.toast-close {
+  position: absolute;
+  top: 8px; right: 10px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.3rem;
+  cursor: pointer;
+}
 </style>
 
 <script>
@@ -198,6 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeModalBtn = modal.querySelector('.close');
   const toast = document.getElementById('toast');
   const toastMsg = document.getElementById('toast-msg');
+  const toastClose = document.getElementById('toast-close');
 
   const bonusProductHandle = "{{ section.settings.bonus_product }}";
   let bonusProduct = null;
@@ -301,11 +316,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
+  toastClose.addEventListener('click', () => toast.classList.add('hidden'));
 
   function showToast(msg) {
     toastMsg.textContent = msg;
     toast.classList.remove('hidden');
-    setTimeout(() => toast.classList.add('hidden'), 4000);
   }
 });
 </script>
