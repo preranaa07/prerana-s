@@ -3,9 +3,9 @@
     position: relative;
     min-height: 80vh;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 4rem 2rem;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 2rem 2rem;
     text-align: center;
     overflow: hidden;
   }
@@ -18,7 +18,7 @@
     z-index: 1;
   }
 
-  .custom-banner img {
+  .custom-banner img.bg {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -27,8 +27,30 @@
     z-index: 0;
   }
 
+  /* ===== Top strip (logo + tagline) ===== */
+  .banner-top {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    color: #fff;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .banner-top img {
+    height: 40px;
+    width: auto;
+  }
+
+  /* ===== Center content ===== */
   .banner-content {
     max-width: 700px;
+    margin: auto;
     position: relative;
     z-index: 2;
     color: #fff;
@@ -100,6 +122,7 @@
     transform: translateX(5px);
   }
 
+  /* ===== Footer strip ===== */
   .banner-footer {
     position: relative;
     z-index: 2;
@@ -112,10 +135,16 @@
     color: #fff;
   }
 
+  /* Mobile tweaks */
   @media (max-width: 768px) {
     .custom-banner {
-      padding: 2rem 1rem;
       min-height: 60vh;
+      padding: 1.5rem 1rem;
+    }
+    .banner-top {
+      flex-direction: column;
+      gap: 0.5rem;
+      font-size: 0.8rem;
     }
     .banner-content h1 {
       font-size: 2.2rem;
@@ -132,9 +161,20 @@
 
 <section class="custom-banner">
   {% if section.settings.bg_image != blank %}
-    <img src="{{ section.settings.bg_image | img_url: '1600x' }}" alt="Banner Background">
+    <img src="{{ section.settings.bg_image | img_url: '1600x' }}" alt="Banner Background" class="bg">
   {% endif %}
 
+  <!-- Top strip -->
+  <div class="banner-top">
+    {% if section.settings.logo_image != blank %}
+      <img src="{{ section.settings.logo_image | img_url: '200x' }}" alt="Banner Logo">
+    {% endif %}
+    {% if section.settings.top_tagline != blank %}
+      <span>{{ section.settings.top_tagline }}</span>
+    {% endif %}
+  </div>
+
+  <!-- Center content -->
   <div class="banner-content">
     <h1>{{ section.settings.headline }}</h1>
     <p>{{ section.settings.subtext }}</p>
@@ -152,11 +192,12 @@
         </a>
       {% endif %}
     </div>
-
-    {% if section.settings.footer_text != blank %}
-      <div class="banner-footer">{{ section.settings.footer_text }}</div>
-    {% endif %}
   </div>
+
+  <!-- Footer strip -->
+  {% if section.settings.footer_text != blank %}
+    <div class="banner-footer">{{ section.settings.footer_text }}</div>
+  {% endif %}
 </section>
 
 {% schema %}
@@ -167,6 +208,17 @@
       "type": "image_picker",
       "id": "bg_image",
       "label": "Background Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_image",
+      "label": "Logo Image"
+    },
+    {
+      "type": "text",
+      "id": "top_tagline",
+      "label": "Top Tagline",
+      "default": "SUSTAINABLE FASHION"
     },
     {
       "type": "text",
