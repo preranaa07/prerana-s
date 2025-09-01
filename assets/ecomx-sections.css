@@ -29,68 +29,57 @@
   padding-inline: var(--gutter);
 }
 
-/* ---------- Banner ---------- */
-.ecomx-banner {
-  position: relative;
-  overflow: hidden;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  color: var(--text);
-  isolation: isolate;
-}
-
-.ecomx-banner__media {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-}
-.ecomx-banner__media img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.ecomx-banner__overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(0deg, rgba(0,0,0,0.5), rgba(0,0,0,0.2));
-}
-
+/* Banner content style */
 .ecomx-banner__content {
-  position: relative;
-  padding: clamp(48px, 8vw, 96px) clamp(24px, 6vw, 64px);
-  display: grid;
-  gap: 1rem;
-  color: var(--accent-contrast);
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 2rem;
+  
+  /* remove box look */
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+  color: #fff; /* make text white for contrast */
+  text-shadow: 0 2px 6px rgba(0,0,0,.5); /* subtle glow for readability */
 }
 
-.ecomx-eyebrow {
-  font-size: clamp(12px, 0.9vw + 10px, 14px);
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: #f3f4f6;
-  opacity: .9;
+.ecomx-banner__title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
 }
 
-.ecomx-headline {
-  font-size: clamp(28px, 2.8vw + 12px, 60px);
-  line-height: 1.1;
-  font-weight: 800;
+.ecomx-banner__text {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
 }
 
-.ecomx-subhead {
-  font-size: clamp(14px, 1vw + 12px, 20px);
-  color: #e5e7eb;
-  max-width: 55ch;
-}
-
-.ecomx-cta-row {
+.ecomx-banner__buttons {
   display: flex;
-  flex-wrap: wrap;
-  gap: .75rem;
-  margin-top: .5rem;
+  justify-content: center;
+  gap: 1rem;
 }
+
+.ecomx-banner__buttons .btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.ecomx-banner__buttons .btn--primary {
+  background: #fff;
+  color: #111;
+}
+
+.ecomx-banner__buttons .btn--secondary {
+  background: transparent;
+  border: 2px solid #fff;
+  color: #fff;
+}
+
 
 /* ---------- Buttons ---------- */
 .ecomx-btn {
