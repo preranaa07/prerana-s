@@ -48,6 +48,7 @@
     text-transform: uppercase;
     background: rgba(0, 0, 0, 0.55);
     padding: 0.8rem 1.2rem;
+    position: relative;
   }
 
   .banner-top img {
@@ -57,17 +58,16 @@
 
   .top-text-row {
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    justify-content: center;
+    width: 100%;
+    position: relative;
   }
 
   .prepend-text {
-    font-weight: 900; /* very bold */
+    position: absolute;
+    left: 1rem; /* far left */
+    font-weight: 900;
     font-size: 1.1rem;
-  }
-
-  .top-tagline {
-    font-weight: 500;
   }
 
   /* Middle strip */
@@ -177,6 +177,10 @@
       padding: 0.8rem 1.5rem;
       font-size: 0.95rem;
     }
+    .prepend-text {
+      position: static;
+      margin-bottom: 0.5rem;
+    }
   }
 </style>
 
@@ -190,7 +194,7 @@
     {% if section.settings.logo_image != blank %}
       <img src="{{ section.settings.logo_image | img_url: '200x' }}" alt="Banner Logo">
     {% endif %}
-    
+
     <div class="top-text-row">
       {% if section.settings.prepend_text != blank %}
         <span class="prepend-text">{{ section.settings.prepend_text }}</span>
