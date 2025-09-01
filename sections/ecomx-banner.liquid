@@ -64,26 +64,20 @@
     border-radius: 8px;
   }
 
-  .banner-headline-wrapper {
-    display: flex;
-    align-items: baseline;
-    justify-content: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-
-  .banner-brand {
-    font-weight: 900;
-    font-size: 2.5rem;
-    letter-spacing: 2px;
-    color: #fff;
-  }
-
   .banner-content h1 {
     font-size: 3.2rem;
     font-weight: 800;
     margin-bottom: 1rem;
     line-height: 1.2;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .banner-content h1 .prepend-text {
+    font-weight: 900;
+    margin-right: 0.5rem;
   }
 
   .banner-content p {
@@ -167,13 +161,6 @@
     .banner-content {
       padding: 2rem 1.2rem;
     }
-    .banner-headline-wrapper {
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-    .banner-brand {
-      font-size: 2rem;
-    }
     .banner-content h1 {
       font-size: 2.4rem;
     }
@@ -204,13 +191,12 @@
 
   <!-- Middle strip -->
   <div class="banner-content">
-    <div class="banner-headline-wrapper">
-      {% if section.settings.brand_text != blank %}
-        <span class="banner-brand">{{ section.settings.brand_text }}</span>
+    <h1>
+      {% if section.settings.prepend_text != blank %}
+        <span class="prepend-text">{{ section.settings.prepend_text }}</span>
       {% endif %}
-      <h1>{{ section.settings.headline }}</h1>
-    </div>
-
+      {{ section.settings.headline }}
+    </h1>
     <p>{{ section.settings.subtext }}</p>
 
     <div class="banner-buttons">
@@ -256,15 +242,15 @@
     },
     {
       "type": "text",
-      "id": "brand_text",
-      "label": "Brand Text (Left of Headline)",
+      "id": "prepend_text",
+      "label": "Text Before Headline",
       "default": "TISSO VISON"
     },
     {
       "type": "text",
       "id": "headline",
       "label": "Headline",
-      "default": "The Gift Guide"
+      "default": "FIND THE IDEAL GIFT FOR YOUR LOVED ONES"
     },
     {
       "type": "textarea",
