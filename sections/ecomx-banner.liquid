@@ -6,17 +6,15 @@
     align-items: center;
     justify-content: center;
     padding: 4rem 2rem;
-    color: #111;
     text-align: center;
-    overflow: hidden; /* ensures no weird scrollbars */
+    overflow: hidden;
   }
 
-  /* Overlay so image is visible but text still readable */
   .custom-banner::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.35); /* darker overlay for better contrast */
+    background: rgba(0, 0, 0, 0.35);
     z-index: 1;
   }
 
@@ -32,8 +30,8 @@
   .banner-content {
     max-width: 700px;
     position: relative;
-    z-index: 2; /* keeps text above overlay + image */
-    color: #fff; /* white text looks better on dark overlay */
+    z-index: 2;
+    color: #fff;
   }
 
   .banner-content h1 {
@@ -49,32 +47,71 @@
     line-height: 1.6;
   }
 
-  .banner-content a {
+  .banner-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .banner-buttons a {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: #fff;
-    color: #000;
     padding: 1rem 2rem;
     font-weight: 600;
     text-decoration: none;
     font-size: 1rem;
     letter-spacing: 1px;
     border-radius: 4px;
+    transition: all 0.25s ease;
   }
 
-  .banner-content a::after {
+  .btn-primary {
+    background: #fff;
+    color: #000;
+    border: 2px solid #fff;
+  }
+
+  .btn-primary:hover {
+    background: transparent;
+    color: #fff;
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: #fff;
+    border: 2px solid #fff;
+  }
+
+  .btn-secondary:hover {
+    background: #fff;
+    color: #000;
+  }
+
+  .banner-buttons a::after {
     content: "→";
     margin-left: 10px;
     font-size: 1.2rem;
     transition: transform 0.2s ease-in-out;
   }
 
-  .banner-content a:hover::after {
+  .banner-buttons a:hover::after {
     transform: translateX(5px);
   }
 
-  /* Mobile Responsiveness */
+  .banner-footer {
+    position: relative;
+    z-index: 2;
+    margin-top: 2rem;
+    padding: 0.5rem 1rem;
+    background: rgba(0,0,0,0.5);
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #fff;
+  }
+
   @media (max-width: 768px) {
     .custom-banner {
       padding: 2rem 1rem;
@@ -86,7 +123,7 @@
     .banner-content p {
       font-size: 1rem;
     }
-    .banner-content a {
+    .banner-buttons a {
       padding: 0.8rem 1.5rem;
       font-size: 0.95rem;
     }
@@ -101,10 +138,23 @@
   <div class="banner-content">
     <h1>{{ section.settings.headline }}</h1>
     <p>{{ section.settings.subtext }}</p>
-    {% if section.settings.button_text != blank %}
-      <a href="{{ section.settings.button_link }}">
-        {{ section.settings.button_text }}
-      </a>
+
+    <div class="banner-buttons">
+      {% if section.settings.primary_button_text != blank %}
+        <a href="{{ section.settings.primary_button_link }}" class="btn-primary">
+          {{ section.settings.primary_button_text }}
+        </a>
+      {% endif %}
+
+      {% if section.settings.secondary_button_text != blank %}
+        <a href="{{ section.settings.secondary_button_link }}" class="btn-secondary">
+          {{ section.settings.secondary_button_text }}
+        </a>
+      {% endif %}
+    </div>
+
+    {% if section.settings.footer_text != blank %}
+      <div class="banner-footer">{{ section.settings.footer_text }}</div>
     {% endif %}
   </div>
 </section>
@@ -122,24 +172,41 @@
       "type": "text",
       "id": "headline",
       "label": "Headline",
-      "default": "Your Banner Headline"
+      "default": "The Gift Guide"
     },
     {
       "type": "textarea",
       "id": "subtext",
       "label": "Subtext",
-      "default": "Your supporting text goes here."
+      "default": "Discover Joy: Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gifts to delight your loved ones this holiday season."
     },
     {
       "type": "text",
-      "id": "button_text",
-      "label": "Button Text",
+      "id": "primary_button_text",
+      "label": "Primary Button Text",
       "default": "Shop Now"
     },
     {
       "type": "url",
-      "id": "button_link",
-      "label": "Button Link"
+      "id": "primary_button_link",
+      "label": "Primary Button Link"
+    },
+    {
+      "type": "text",
+      "id": "secondary_button_text",
+      "label": "Secondary Button Text",
+      "default": "Choose Gift"
+    },
+    {
+      "type": "url",
+      "id": "secondary_button_link",
+      "label": "Secondary Button Link"
+    },
+    {
+      "type": "text",
+      "id": "footer_text",
+      "label": "Footer Text",
+      "default": "SUSTAINABLE, ETHICALLY MADE CLOTHES IN SIZES XXS TO 6XL"
     }
   ],
   "presets": [
