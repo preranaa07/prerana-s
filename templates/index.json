@@ -22,13 +22,12 @@
         "button": {
           "type": "buttons",
           "settings": {
-            "button_label_1": "The Gift Guide",
+            "button_label_1": "The Gift Guide (Main Page)",
             "button_link_1": "/pages/e",
             "button_style_secondary_1": false,
             "button_label_2": "",
             "button_link_2": "",
-            "button_style_secondary_2": false,
-            "custom_css_class_1": "gift-guide-btn"
+            "button_style_secondary_2": false
           }
         }
       },
