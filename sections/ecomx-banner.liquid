@@ -4,10 +4,10 @@
     min-height: 80vh;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    padding: 2rem 2rem;
+    justify-content: space-between; /* pushes strips apart */
     text-align: center;
     overflow: hidden;
+    color: #fff;
   }
 
   .custom-banner::before {
@@ -27,19 +27,24 @@
     z-index: 0;
   }
 
-  /* ===== Top strip (logo + tagline) ===== */
-  .banner-top {
+  /* ===== Strips ===== */
+  .banner-top,
+  .banner-content,
+  .banner-footer {
     position: relative;
     z-index: 2;
+    padding: 1rem;
+  }
+
+  /* Top strip */
+  .banner-top {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 1rem;
-    margin-bottom: 1rem;
-    color: #fff;
     font-size: 0.9rem;
-    text-transform: uppercase;
     letter-spacing: 1px;
+    text-transform: uppercase;
   }
 
   .banner-top img {
@@ -47,13 +52,10 @@
     width: auto;
   }
 
-  /* ===== Center content ===== */
+  /* Middle strip */
   .banner-content {
     max-width: 700px;
-    margin: auto;
-    position: relative;
-    z-index: 2;
-    color: #fff;
+    margin: 0 auto;
   }
 
   .banner-content h1 {
@@ -86,13 +88,13 @@
     font-size: 1rem;
     letter-spacing: 1px;
     border-radius: 4px;
+    border: 2px solid #fff;
     transition: all 0.25s ease;
   }
 
   .btn-primary {
     background: #fff;
     color: #000;
-    border: 2px solid #fff;
   }
 
   .btn-primary:hover {
@@ -103,7 +105,6 @@
   .btn-secondary {
     background: transparent;
     color: #fff;
-    border: 2px solid #fff;
   }
 
   .btn-secondary:hover {
@@ -122,24 +123,18 @@
     transform: translateX(5px);
   }
 
-  /* ===== Footer strip ===== */
+  /* Bottom strip */
   .banner-footer {
-    position: relative;
-    z-index: 2;
-    margin-top: 2rem;
-    padding: 0.5rem 1rem;
-    background: rgba(0,0,0,0.5);
     font-size: 0.9rem;
     letter-spacing: 1px;
     text-transform: uppercase;
-    color: #fff;
+    background: rgba(0,0,0,0.5);
   }
 
   /* Mobile tweaks */
   @media (max-width: 768px) {
     .custom-banner {
       min-height: 60vh;
-      padding: 1.5rem 1rem;
     }
     .banner-top {
       flex-direction: column;
@@ -174,7 +169,7 @@
     {% endif %}
   </div>
 
-  <!-- Center content -->
+  <!-- Middle strip -->
   <div class="banner-content">
     <h1>{{ section.settings.headline }}</h1>
     <p>{{ section.settings.subtext }}</p>
@@ -194,7 +189,7 @@
     </div>
   </div>
 
-  <!-- Footer strip -->
+  <!-- Bottom strip -->
   {% if section.settings.footer_text != blank %}
     <div class="banner-footer">{{ section.settings.footer_text }}</div>
   {% endif %}
