@@ -40,12 +40,9 @@
   /* Top strip */
   .banner-top {
     display: flex;
-    flex-direction: column; /* stack items */
     align-items: center;
     justify-content: center;
-    text-align: center;
-    gap: 0.3rem;
-    font-size: 1rem;
+    font-size: 0.9rem;
     letter-spacing: 2px;
     text-transform: uppercase;
     background: rgba(0, 0, 0, 0.55);
@@ -55,26 +52,28 @@
   .banner-top img {
     height: 34px;
     width: auto;
-    margin-bottom: 0.5rem;
+    margin-right: 0.8rem;
   }
 
   .top-text-row {
     display: flex;
-    flex-direction: column; /* stack text */
     align-items: center;
     justify-content: center;
-    gap: 0.2rem;
+    flex-wrap: wrap; /* allows wrapping if too long */
+    gap: 0.6rem;
+    width: 100%;
   }
 
   .prepend-text {
     font-weight: 900;
     font-size: 1.1rem;
+    white-space: nowrap; /* prevents brand name breaking */
   }
 
   .top-tagline {
     font-size: 0.9rem;
     font-weight: 400;
-    letter-spacing: 1px;
+    color: #f0f0f0;
   }
 
   /* Middle strip */
@@ -234,202 +233,6 @@
     <div class="banner-footer">{{ section.settings.footer_text }}</div>
   {% endif %}
 </section>
-    padding: 1rem;
-  }
-
-  /* Top strip */
-  .banner-top {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    font-size: 0.9rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    background: rgba(0, 0, 0, 0.55);
-    padding: 0.8rem 1.2rem;
-    position: relative;
-  }
-
-  .banner-top img {
-    height: 38px;
-    width: auto;
-  }
-
-  .top-text-row {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    position: relative;
-  }
-
-  .prepend-text {
-    position: absolute;
-    left: 1rem; /* far left */
-    font-weight: 900;
-    font-size: 1.1rem;
-  }
-
-  /* Middle strip */
-  .banner-content {
-    max-width: 750px;
-    margin: 0 auto;
-    background: rgba(0, 0, 0, 0.45);
-    padding: 3rem 2rem;
-    border-radius: 8px;
-  }
-
-  .banner-content h1 {
-    font-size: 3.2rem;
-    font-weight: 800;
-    margin-bottom: 1rem;
-    line-height: 1.2;
-  }
-
-  .banner-content p {
-    font-size: 1.2rem;
-    margin-bottom: 2rem;
-    line-height: 1.6;
-    color: #f0f0f0;
-  }
-
-  .banner-buttons {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .banner-buttons a {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem 2.2rem;
-    font-weight: 600;
-    text-decoration: none;
-    font-size: 1.05rem;
-    letter-spacing: 1px;
-    border-radius: 6px;
-    border: 2px solid #fff;
-    transition: all 0.25s ease;
-  }
-
-  .btn-primary {
-    background: #fff;
-    color: #000;
-  }
-
-  .btn-primary:hover {
-    background: transparent;
-    color: #fff;
-  }
-
-  .btn-secondary {
-    background: transparent;
-    color: #fff;
-  }
-
-  .btn-secondary:hover {
-    background: #fff;
-    color: #000;
-  }
-
-  .banner-buttons a::after {
-    content: "→";
-    margin-left: 10px;
-    font-size: 1.2rem;
-    transition: transform 0.2s ease-in-out;
-  }
-
-  .banner-buttons a:hover::after {
-    transform: translateX(6px);
-  }
-
-  /* Bottom strip */
-  .banner-footer {
-    font-size: 0.9rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    background: rgba(0, 0, 0, 0.65);
-    padding: 1rem;
-  }
-
-  /* Mobile tweaks */
-  @media (max-width: 768px) {
-    .custom-banner {
-      min-height: 65vh;
-    }
-    .banner-top {
-      flex-direction: column;
-      gap: 0.5rem;
-      font-size: 0.8rem;
-    }
-    .banner-content {
-      padding: 2rem 1.2rem;
-    }
-    .banner-content h1 {
-      font-size: 2.4rem;
-    }
-    .banner-content p {
-      font-size: 1rem;
-    }
-    .banner-buttons a {
-      padding: 0.8rem 1.5rem;
-      font-size: 0.95rem;
-    }
-    .prepend-text {
-      position: static;
-      margin-bottom: 0.5rem;
-    }
-  }
-</style>
-
-<section class="custom-banner">
-  {% if section.settings.bg_image != blank %}
-    <img src="{{ section.settings.bg_image | img_url: '1600x' }}" alt="Banner Background" class="bg">
-  {% endif %}
-
-  <!-- Top strip -->
-  <div class="banner-top">
-    {% if section.settings.logo_image != blank %}
-      <img src="{{ section.settings.logo_image | img_url: '200x' }}" alt="Banner Logo">
-    {% endif %}
-
-    <div class="top-text-row">
-      {% if section.settings.prepend_text != blank %}
-        <span class="prepend-text">{{ section.settings.prepend_text }}</span>
-      {% endif %}
-      {% if section.settings.top_tagline != blank %}
-        <span class="top-tagline">{{ section.settings.top_tagline }}</span>
-      {% endif %}
-    </div>
-  </div>
-
-  <!-- Middle strip -->
-  <div class="banner-content">
-    <h1>{{ section.settings.headline }}</h1>
-    <p>{{ section.settings.subtext }}</p>
-
-    <div class="banner-buttons">
-      {% if section.settings.primary_button_text != blank %}
-        <a href="{{ section.settings.primary_button_link }}" class="btn-primary">
-          {{ section.settings.primary_button_text }}
-        </a>
-      {% endif %}
-
-      {% if section.settings.secondary_button_text != blank %}
-        <a href="{{ section.settings.secondary_button_link }}" class="btn-secondary">
-          {{ section.settings.secondary_button_text }}
-        </a>
-      {% endif %}
-    </div>
-  </div>
-
-  <!-- Bottom strip -->
-  {% if section.settings.footer_text != blank %}
-    <div class="banner-footer">{{ section.settings.footer_text }}</div>
-  {% endif %}
-</section>
 
 {% schema %}
 {
@@ -455,7 +258,7 @@
       "type": "text",
       "id": "top_tagline",
       "label": "Top Tagline",
-      "default": "SUSTAINABLE FASHION"
+      "default": "FIND THE IDEAL GIFT FOR YOUR LOVED ONES"
     },
     {
       "type": "text",
