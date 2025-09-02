@@ -47,6 +47,7 @@
     text-transform: uppercase;
     background: rgba(0, 0, 0, 0.55);
     padding: 0.8rem 1.2rem;
+    position: relative;
   }
 
   .banner-top img {
@@ -57,17 +58,17 @@
 
   .top-text-row {
     display: flex;
-    align-items: center;
     justify-content: center;
-    flex-wrap: wrap; /* allows wrapping if too long */
-    gap: 0.6rem;
     width: 100%;
+    position: relative;
   }
 
   .prepend-text {
+    position: absolute;
+    left: 1rem; /* desktop: fixed to far left */
     font-weight: 900;
     font-size: 1.1rem;
-    white-space: nowrap; /* prevents brand name breaking */
+    white-space: nowrap;
   }
 
   .top-tagline {
@@ -178,7 +179,15 @@
       padding: 0.8rem 1.5rem;
       font-size: 0.95rem;
     }
+
+    /* --- Fix top strip on mobile --- */
+    .top-text-row {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.4rem;
+    }
     .prepend-text {
+      position: static; /* remove absolute positioning */
       font-size: 1rem;
     }
     .top-tagline {
